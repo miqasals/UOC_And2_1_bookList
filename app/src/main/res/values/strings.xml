@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">UOCpac1app</string>
+    <string name="title_activity_book_list">BookListActivity</string>
+</resources>
