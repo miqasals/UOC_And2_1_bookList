@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">UOCpac1app</string>
     <string name="title_activity_book_list">BookListActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Details about Item: 1 \nMore details information here.</string>
+    <string name="book_item_name_sample">"Item "</string>
 </resources>

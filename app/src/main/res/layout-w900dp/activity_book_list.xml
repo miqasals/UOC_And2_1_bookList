@@ -9,6 +9,8 @@
         android:layout_height="match_parent"
         android:layout_weight="1"></ListView>
 
+    <!-- TODO: Comprovar maquetacio -->
+
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
