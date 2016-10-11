@@ -1,17 +1,18 @@
 package com.uoc.miquel.uocpac1app.activities;
 
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.uoc.miquel.uocpac1app.adapters.BookListAdapter;
-import com.uoc.miquel.uocpac1app.entities.Book;
+import com.uoc.miquel.uocpac1app.fragments.BookListFragment;
+import com.uoc.miquel.uocpac1app.model.BookContent;
 import com.uoc.miquel.uocpac1app.fragments.BookDetailFragment;
 import com.uoc.miquel.uocpac1app.R;
 
-import java.util.ArrayList;
 
 /*
     Fonts consultades:
@@ -23,61 +24,53 @@ import java.util.ArrayList;
 public class BookListActivity extends AppCompatActivity {
 
     private final int NUM_ITEMS = 15;
-
+    private View detailFrag;
+    private boolean twoFragments = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list);
 
+        // Es comprova si hi ha guardada un estat de l'activity.
+        if (savedInstanceState != null) {
+            return;
+        }
 
-        // Obtenim la referencia de la llista.
-        ListView bookList = (ListView) findViewById(R.id.book_list);
+        //Es crea instancia de l'activity que controlarà el fragment
+        BookListFragment bookListFrag = new BookListFragment();
 
-        // Es crea una coleccio de llibres provisional per omplir la llista
-        ArrayList<Book> books = new ArrayList<>(populatesSampleList());
+        //Es passa les dades que pugui necessitar el fragment.
+        bookListFrag.setArguments(getIntent().getExtras());
 
-        // Inicialitzem l'adaptador de la llista.
-        BookListAdapter bookListAdapter = new BookListAdapter(this, R.id.book_list, books);
+        //S'obté la instancia de Fragment manager i s'enllaça
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager
+                .beginTransaction()
+                .add(R.id.frag_book_list, bookListFrag)
+                .commit();
+
 
         /*
-            Es vincula l'adaptador a la llista i es mostra a la pantalla carregant el contingut
-            amb l'adaptador.
-          */
-
-        bookList.setAdapter(bookListAdapter);
-
-
-        /**************** w900dp FRAGMENT *********************
-        Comprovem si en el layout que s'ha carregat existeix el fragment
-        amb id frag_book_detail. En cas que hi sigui, es carregarà el
-        fragment amb l'activity i el seu propi layout. Si no, sol es carregara
-        la llista que ocuparà tota la pantalla.
-        */
+         Comprovem si en el layout que s'ha carregat existeix el fragment
+         amb id frag_book_detail. En cas que hi sigui, es carrega també
+         el layout corresponent als detalls del llibre mitjançant l'objecte
+         BookDetailFragment i el FrameLayout amb id frag_book_detail.
+         */
         if (findViewById(R.id.frag_book_detail) != null) {
-
+            twoFragments = true;
 
             //Es crea instancia de l'activity que controlarà el fragment
             BookDetailFragment bookDetailFrag = new BookDetailFragment();
 
             //Es passa les dades que pugui necessitar el fragment.
-            bookDetailFrag.setArguments(getIntent().getExtras());
+            //   bookDetailFrag.setArguments(getIntent().getExtras());
 
             //Enllaça el fragment bookDetailFrag al contenidor frag_book_detail.
-            getSupportFragmentManager()
+            fragmentManager
                     .beginTransaction()
                     .add(R.id.frag_book_detail, bookDetailFrag)
                     .commit();
         }
-        ///////////////////
-
-    }
-
-    private ArrayList<Book> populatesSampleList() {
-        ArrayList<Book> list = new ArrayList<>();
-        for (int i=0;i<NUM_ITEMS;i++){
-            list.add(new Book(i+1,getString(R.string.book_item_name_sample) + (i+1),null));
-        }
-        return list;
     }
 }

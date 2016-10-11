@@ -2,7 +2,6 @@ package com.uoc.miquel.uocpac1app.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.uoc.miquel.uocpac1app.R;
-import com.uoc.miquel.uocpac1app.entities.Book;
+import com.uoc.miquel.uocpac1app.model.BookContent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +18,13 @@ import java.util.List;
  * Created by mucl on 10/10/2016.
  */
 
-public class BookListAdapter extends ArrayAdapter<Book> {
+public class BookListAdapter extends ArrayAdapter<BookContent> {
 
-    private ArrayList<Book> books;
+    private ArrayList<BookContent> books;
 
-    public BookListAdapter(Context context, int resource, List<Book> objects) {
+    public BookListAdapter(Context context, int resource, List<BookContent> objects) {
         super(context, resource, objects);
-        this.books = (ArrayList<Book>) objects;
+        this.books = (ArrayList<BookContent>) objects;
     }
 
     @NonNull
@@ -44,7 +43,7 @@ public class BookListAdapter extends ArrayAdapter<Book> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Book book = books.get(position);
+        BookContent book = books.get(position);
 
         holder.bookId.setText(String.valueOf(book.getId()));
         holder.bookName.setText(book.getName());

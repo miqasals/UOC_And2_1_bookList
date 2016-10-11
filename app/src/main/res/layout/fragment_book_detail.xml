@@ -1,13 +1,31 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.uoc.miquel.uocpac1app.fragments.BookDetailFragment">
+    android:padding="@dimen/general_padding">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/book_detail_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/book_detail_name_text" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/book_detail_id_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/book_detail_id_text"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/book_detail_name_text"
+        android:layout_toEndOf="@+id/book_detail_name_text"
+        android:paddingLeft="4dp"/>
+
+    <TextView
+        android:id="@+id/book_detail_desc_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/book_detail_desc_text"
+        android:layout_alignLeft="@id/book_detail_name_text"
+        android:layout_below="@id/book_detail_name_text"/>
+
+</RelativeLayout>

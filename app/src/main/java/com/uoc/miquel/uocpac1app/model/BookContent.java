@@ -1,18 +1,20 @@
-package com.uoc.miquel.uocpac1app.entities;
+package com.uoc.miquel.uocpac1app.model;
+
+import java.util.Date;
 
 /**
  * Created by mucl on 10/10/2016.
  */
-public class Book {
+public class BookContent {
 
     private int id;
     private String name;
     private String desc;
 
-    public Book() {
+    public BookContent() {
     }
 
-    public Book(int id, String name, String desc) {
+    public BookContent(int id, String name, String desc) {
         this.id = id;
         this.name = name;
         this.desc = desc;
@@ -41,4 +43,16 @@ public class Book {
     public void setDesc(String desc) {
         this.desc = desc;
     }
+
+
+    static class BookItem {
+        public int identificador;
+        public String titol;
+        public String autor;
+        public Date dataPublicacio;
+        public String descripcio;
+        public String imgUrl;
+    }
+
+
 }
