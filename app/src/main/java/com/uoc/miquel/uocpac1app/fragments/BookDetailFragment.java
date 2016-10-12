@@ -26,9 +26,13 @@ public class BookDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_book_detail, container, false);
+
+
+
+
+
+
     }
 
-    public void updateItem(int position) {
 
-    }
 }
