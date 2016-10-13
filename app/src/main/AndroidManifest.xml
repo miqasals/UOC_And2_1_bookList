@@ -19,8 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.BookDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:name=".activities.BookDetailActivity"></activity>
     </application>
 
 </manifest>

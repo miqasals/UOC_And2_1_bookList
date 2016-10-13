@@ -16,8 +16,6 @@ public class BookDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_detail);
 
-        Intent intent =  getIntent();
-        //B selectedBook = intent.getStringExtra("selectedBook");
 
 
 

@@ -18,7 +18,7 @@ import java.util.List;
  * Created by mucl on 10/10/2016.
  *
  * s'encarrega de mostrar per pantalla la llista de llibres amb les dades
- * que volem incloure.
+ * que volem incloure. Utilitzat en el disseny de l'aplicació en l'EXERCICI 1.
  */
 
 public class BookListAdapter extends ArrayAdapter<BookContent> {
@@ -31,7 +31,6 @@ public class BookListAdapter extends ArrayAdapter<BookContent> {
         super(context, resource, objects);
         this.books = (ArrayList<BookContent>) objects;
     }
-
 
     /*
     Es sobreescriu getView per tal que, quan es fa la crida implicita a aquest mètode
@@ -53,7 +52,7 @@ public class BookListAdapter extends ArrayAdapter<BookContent> {
          */
         if (convertView == null || convertView.getTag() == null) {
             holder = new ViewHolder();
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.book_item, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.book_item_exercici1, parent, false);
             holder.bookId = (TextView) convertView.findViewById(R.id.book_item_id);
             holder.bookName = (TextView) convertView.findViewById(R.id.book_item_name);
             convertView.setTag(holder);
@@ -64,8 +63,8 @@ public class BookListAdapter extends ArrayAdapter<BookContent> {
 
         BookContent book = books.get(position);
 
-        holder.bookId.setText(String.valueOf(book.getId()));
-        holder.bookName.setText(book.getName());
+        //holder.bookId.setText(String.valueOf(book.getId()));
+        //holder.bookName.setText(book.getName());              // Al modificar la classe book getName i getId s'anulen.
 
         return convertView;
     }
