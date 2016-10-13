@@ -1,21 +1,14 @@
 package com.uoc.miquel.uocpac1app.activities;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
-import com.uoc.miquel.uocpac1app.adapters.BookListAdapter;
-import com.uoc.miquel.uocpac1app.adapters.RecyclerAdapter;
-import com.uoc.miquel.uocpac1app.model.BookContent;
-import com.uoc.miquel.uocpac1app.fragments.BookDetailFragment;
 import com.uoc.miquel.uocpac1app.R;
-
-import java.util.ArrayList;
+import com.uoc.miquel.uocpac1app.adapters.RecyclerAdapter;
+import com.uoc.miquel.uocpac1app.fragments.BookDetailFragment;
+import com.uoc.miquel.uocpac1app.model.BookContent;
 
 
 /*
@@ -31,6 +24,7 @@ public class BookListActivity extends AppCompatActivity {
     private boolean twoFragments = false;
 
     // https://developer.android.com/training/material/lists-cards.html?hl=es
+    // Variables globals per la llista RecyclerView.
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -45,14 +39,22 @@ public class BookListActivity extends AppCompatActivity {
             return;
         }
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_book_list);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new RecyclerAdapter(this, BookContent.ITEMS);
-        mRecyclerView.setAdapter(mAdapter);
-
         // indiquem en el boolea si tindrem dos panells o no.
         twoFragments = findViewById(R.id.frag_book_detail) != null;
+
+
+        //Es busca, primerament, l'element RecyclerView del layout.
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_book_list);
+        //Es crea el gestor de layout.
+        mLayoutManager = new LinearLayoutManager(this);
+        //S'assigna el gestor de layout a la llista que tenim.
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        //Es crea l'adaptador passant el context i la llista d'elements per parametre.
+        mAdapter = new RecyclerAdapter(this, BookContent.ITEMS);
+        //S'assigna l'adaptador a la llista.
+        mRecyclerView.setAdapter(mAdapter);
+
+
 
 
 
@@ -69,7 +71,12 @@ public class BookListActivity extends AppCompatActivity {
 ------------------------------------*/
 
 
-
+        /*
+        Si twoFragments = true, vol dir que el panell del FrameLayour de detalls s'ha carregat
+        i, per tant, ens trobem amb una pantalla de mes de 900dp. Al existir aquest panell s'ha
+        de crear també l'activity que el gestiona (BookDetailFragment) i iniciar el fragment amb
+        l'ajuda de FragmentManager.
+         */
         if (twoFragments) {
 
 

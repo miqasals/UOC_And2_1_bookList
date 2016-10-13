@@ -22,7 +22,7 @@ public class BookContent {
     }
 
 
-    private static class BookItem {
+    public static class BookItem {
         private int identificador;
         private String titol;
         private String autor;
@@ -37,6 +37,54 @@ public class BookContent {
             this.dataPublicacio = dataPublicacio;
             this.descripcio = descripcio;
             this.imgUrl = imgUrl;
+        }
+
+        public void setIdentificador(int identificador) {
+            this.identificador = identificador;
+        }
+
+        public void setTitol(String titol) {
+            this.titol = titol;
+        }
+
+        public void setAutor(String autor) {
+            this.autor = autor;
+        }
+
+        public void setDataPublicacio(Date dataPublicacio) {
+            this.dataPublicacio = dataPublicacio;
+        }
+
+        public void setDescripcio(String descripcio) {
+            this.descripcio = descripcio;
+        }
+
+        public void setImgUrl(String imgUrl) {
+            this.imgUrl = imgUrl;
+        }
+
+        public int getIdentificador() {
+            return identificador;
+        }
+
+        public String getTitol() {
+            return titol;
+        }
+
+        public String getAutor() {
+            return autor;
+        }
+
+        public Date getDataPublicacio() {
+            return dataPublicacio;
+        }
+
+        public String getDescripcio() {
+            return descripcio;
+        }
+
+        public String getImgUrl() {
+            return imgUrl;
         }
     }
 
