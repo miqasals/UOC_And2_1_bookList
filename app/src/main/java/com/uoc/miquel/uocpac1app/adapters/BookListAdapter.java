@@ -45,7 +45,7 @@ public class BookListAdapter extends ArrayAdapter<BookContent> {
 
         /*
         Es comprova que no existeixi ja una View en memòria de l'item de la llista. Si
-        no existeix, es crea una View i la instancia de ViewHolder i s'obté la referencia
+        no existeix, es crea una View i la instancia de ViewHolderItem i s'obté la referencia
         dels elements de la vista en el holder per poder actuar sobre ells. En cas que ja
         existeixi una vista i tingui guardat la referència del holder com a tag, es recupera
         i s'actua sobre els elements modificant el text.
@@ -71,7 +71,7 @@ public class BookListAdapter extends ArrayAdapter<BookContent> {
 
 
     /*
-    ViewHolder es una classe estatica que ens evita realitzar més d'una instancia en memoria
+    ViewHolderItem es una classe estatica que ens evita realitzar més d'una instancia en memoria
     de cada element visual per tal d'evitar successives crides a metodes de cerca com
     findViewById que consumeix bastants recursos.
      */

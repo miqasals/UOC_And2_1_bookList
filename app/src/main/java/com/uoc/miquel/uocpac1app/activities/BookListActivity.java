@@ -34,10 +34,10 @@ public class BookListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list);
 
-        // Es comprova si hi ha guardat un estat de l'activity.
+        /* EXERCICI1 - Es comprova si hi ha guardat un estat de l'activity.
         if (savedInstanceState != null) {
             return;
-        }
+        }*/
 
         // indiquem en el boolea si tindrem dos panells o no.
         twoFragments = findViewById(R.id.frag_book_detail) != null;
@@ -50,7 +50,7 @@ public class BookListActivity extends AppCompatActivity {
         //S'assigna el gestor de layout a la llista que tenim.
         mRecyclerView.setLayoutManager(mLayoutManager);
         //Es crea l'adaptador passant el context i la llista d'elements per parametre.
-        mAdapter = new RecyclerAdapter(this, BookContent.ITEMS);
+        mAdapter = new RecyclerAdapter(this, BookContent.ITEMS, twoFragments);
         //S'assigna l'adaptador a la llista.
         mRecyclerView.setAdapter(mAdapter);
 
@@ -78,14 +78,19 @@ public class BookListActivity extends AppCompatActivity {
         l'ajuda de FragmentManager.
          */
         if (twoFragments) {
-
-
             //Es crea instancia de l'activity que controlarà el fragment
             BookDetailFragment bookDetailFrag = new BookDetailFragment();
 
+            /*  NO FA FALTA.....
             //Es crea un bundle per afegir al fragemnt un element per mostrar per defecte.
             Bundle posArg = new Bundle();
-            posArg.putInt("position",DEFAULT_ELEMENT);
+            /* Per defecte indicarem que es mostri el primer element de la llista ja que si ho
+             * fem per identificador es possible que es modifiques la llista i aquest no existis.
+             *
+            posArg.putInt(BOOK_ID,BookContent.ITEMS.get(DEFAULT_ELEMENT).getIdentificador());
+            bookDetailFrag.setArguments(posArg);
+*/
+
 
             //Enllaça el fragment bookDetailFrag al contenidor frag_book_detail.
             getSupportFragmentManager()

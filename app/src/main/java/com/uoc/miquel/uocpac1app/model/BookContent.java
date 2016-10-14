@@ -9,12 +9,24 @@ import java.util.List;
  */
 public class BookContent {
 
+
+
     public static final List<BookItem> ITEMS = new ArrayList<>();
+    private static final String URL = "http://www.gigamesh.com/assets/images/catalog/danza-de-dragones-3.jpg";
+
+    /*
     static {
-        BookItem book1 = new BookItem( 0 , "Title1" , "Author1" , new Date(), "Description" , null );
-        BookItem book2 = new BookItem( 1 , "Title2" , "Author2" , new Date(), "Description 2" , null );
-        ITEMS.add(book1);
-        ITEMS.add(book2);
+            BookItem book1 = new BookItem( 0 , "Title1" , "Author1" , new Date(), "Description" , URL );
+            BookItem book2 = new BookItem( 1 , "Title2" , "Author2" , new Date(), "Description 2" , URL );
+            ITEMS.add(book1);
+            ITEMS.add(book2);
+        }
+        */
+    static {
+        for (int i = 1; i < 10; i++) {
+            BookItem book = new BookItem( i , "Title" + i , "Author" + i , new Date(), "Description" , URL );
+            ITEMS.add(book);
+        }
     }
 
 
@@ -29,6 +41,18 @@ public class BookContent {
         private Date dataPublicacio;
         private String descripcio;
         private String imgUrl;
+
+        public BookItem (){
+        }
+
+        public BookItem (BookItem book){
+            this.identificador = book.getIdentificador();
+            this.titol = book.getTitol();
+            this.autor = book.getAutor();
+            this.dataPublicacio = book.getDataPublicacio();
+            this.descripcio = book.getDescripcio();
+            this.imgUrl = book.getImgUrl();
+        }
 
         public BookItem(int identificador, String titol, String autor, Date dataPublicacio, String descripcio, String imgUrl) {
             this.identificador = identificador;
