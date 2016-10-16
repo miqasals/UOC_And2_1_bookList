@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ public class BookDetailFragment extends Fragment {
         if (args != null) {
             book = BookContent.ITEMS.get(args.getInt("position"));
         }else{
-            book = BookContent.ITEMS.get(0);
+            //book = BookContent.ITEMS.get(0);
 
         }
 
@@ -56,25 +57,14 @@ public class BookDetailFragment extends Fragment {
         TextView autor = (TextView) view.findViewById(R.id.book_detail_autor);
         TextView desc = (TextView) view.findViewById(R.id.book_detail_desc);
         ImageView img = (ImageView) view.findViewById(R.id.book_detail_img);
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        data.setText(dateFormat.format(book.getDataPublicacio()));
-        autor.setText(book.getAutor());
-        desc.setText(book.getDescripcio());
-        Picasso.with(view.getContext()).load(book.getImgUrl()).fit().centerInside().into(img);
-
+        if (book != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            data.setText(dateFormat.format(book.getDataPublicacio()));
+            autor.setText(book.getAutor());
+            desc.setText(book.getDescripcio());
+            Picasso.with(view.getContext()).load(book.getImgUrl()).fit().centerInside().into(img);
+        }
         return view;
     }
 
-
-    public void updateFragment(Context context, int position) {
-       //Com coi es realitza un replace del puto fragment?
-        book = BookContent.ITEMS.get(position);
-        FragmentManager fragmentManager = getFragmentManager(); //retorna null i peta
-        fragmentManager
-                .beginTransaction()
-                .replace(R.id.frag_book_detail,this)
-                .addToBackStack(null)
-                .commit();
-    }
 }

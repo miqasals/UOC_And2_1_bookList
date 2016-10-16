@@ -3,6 +3,9 @@ package com.uoc.miquel.uocpac1app.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,9 +98,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 // ============ INICI CODI A COMPLETAR ===============
 // Iniciar el fragment corresponent a tablet, enviant l’argument de la posició seleccionada
                     BookDetailFragment bookDetailFragment = new BookDetailFragment();
-                    //Bundle posArg = new Bundle();
-                    //posArg.putInt("position",position);
-                    bookDetailFragment.updateFragment(v.getContext(),position);
+                    Bundle posArg = new Bundle();
+                    posArg.putInt("position",position);
+                    bookDetailFragment.setArguments(posArg);
+
+                    FragmentManager manager = ((FragmentActivity)mContext).getSupportFragmentManager();
+                    manager.beginTransaction()
+                            .replace(R.id.frag_book_detail,bookDetailFragment)
+                            .commit();
 
 
 // ============ FI CODI A COMPLETAR =================

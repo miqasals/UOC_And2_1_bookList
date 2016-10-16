@@ -44,7 +44,6 @@
         android:id="@+id/book_detail_img" />
 
     <TextView
-        android:text="Autor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/book_detail_autor"
@@ -53,7 +52,6 @@
         android:layout_toEndOf="@+id/book_detail_img" />
 
     <TextView
-        android:text="data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/book_detail_data"
@@ -62,7 +60,6 @@
         android:layout_toEndOf="@+id/book_detail_img" />
 
     <TextView
-        android:text="descripcio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/book_detail_desc"
