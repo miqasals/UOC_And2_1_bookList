@@ -40,12 +40,7 @@ public class BookDetailFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             book = BookContent.ITEMS.get(args.getInt("position"));
-        }else{
-            //book = BookContent.ITEMS.get(0);
-
         }
-
-
     }
 
     @Override

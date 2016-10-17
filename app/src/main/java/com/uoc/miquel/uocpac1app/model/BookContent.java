@@ -45,14 +45,6 @@ public class BookContent {
         public BookItem (){
         }
 
-        public BookItem (BookItem book){
-            this.identificador = book.getIdentificador();
-            this.titol = book.getTitol();
-            this.autor = book.getAutor();
-            this.dataPublicacio = book.getDataPublicacio();
-            this.descripcio = book.getDescripcio();
-            this.imgUrl = book.getImgUrl();
-        }
 
         public BookItem(int identificador, String titol, String autor, Date dataPublicacio, String descripcio, String imgUrl) {
             this.identificador = identificador;

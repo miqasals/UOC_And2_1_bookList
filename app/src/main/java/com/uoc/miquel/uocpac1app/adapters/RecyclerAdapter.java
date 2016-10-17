@@ -81,9 +81,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 // ============ INICI CODI A COMPLETAR ===============
 // Guarda la posició actual a la vista del holder
 
-        //viewHolder.position = position;  //??????????????????????????? pa que??
-
-
+        viewHolder.position = position;  //??????????????????????????? pa que??
 
 // ============ FI CODI A COMPLETAR =================
         viewHolder.view.setOnClickListener( new View.OnClickListener() {
@@ -106,7 +104,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     manager.beginTransaction()
                             .replace(R.id.frag_book_detail,bookDetailFragment)
                             .commit();
-
 
 // ============ FI CODI A COMPLETAR =================
                 } else {
@@ -148,7 +145,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public View view;
         public TextView titol,autor;
         public BookContent.BookItem item;
-        //public int position;
+        public int position;
 
         public ViewHolderItem(View itemView) {
             super(itemView);
