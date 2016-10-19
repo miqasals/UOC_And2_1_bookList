@@ -44,15 +44,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
     /*
-    onCrateViewHolder s'encarrega de inflar la vista de l'element i la retornem per tal que
-    es mostri per pantalla. Serà cridat implicitament per onBindViewHolder.
+    onCrateViewHolder se encarga de inflar la vista del elemento y la devuelve para que
+    es muestre p0r pantalla.
      */
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
+        //Se crea una instancia del LayoutInflater y una vista.
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = null;
 
+        //Segun si el elemento es par o impar se infla el layout correspondiente.
         switch (viewType) {
             case EVEN:
                 view = inflater.inflate(R.layout.book_item_even, parent, false);
@@ -63,26 +65,29 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             default:
                 break;
         }
+        //Se devuelve el viewHolder de la vista.
         return new ViewHolderItem(view);
     }
 
 
     /*
-    onBindViewHolder s'encarrega de mostrar els diferents elements quan la RecyclerView ho
-    necessita modificant el contingut de l'element en funció de la posició.
+     * Se encarga de mostrar los diferentes elementos cuando la RecyclerView lo necesite, modificando
+     * el conjunto de elementos en funcion de la posicion.
      */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
+        //Se crea un elemento viewHolder vacio para capturar los datos del book correspondiente.
         final ViewHolderItem viewHolder = (ViewHolderItem) holder;
 
+        //Actualizamos los valores del viewHolder con el elemento correspondiente de la lista.
         viewHolder.item = items.get(position);
         viewHolder.titol.setText(items.get(position).getTitol());
         viewHolder.autor.setText(items.get(position).getAutor());
 // ============ INICI CODI A COMPLETAR ===============
 // Guarda la posició actual a la vista del holder
 
-        viewHolder.position = position;  //??????????????????????????? pa que??
+        viewHolder.position = position;
 
 // ============ FI CODI A COMPLETAR =================
         viewHolder.view.setOnClickListener( new View.OnClickListener() {
@@ -91,14 +96,24 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 int currentPos;
 // ============ INICI CODI A COMPLETAR ===============
 // Obtindre la posició del llibre on s’ha fet click de la vista
-                currentPos = position; //???????????????
+
+                currentPos = position;
+
 // ============ FI CODI A COMPLETAR =================
                 if ( twoFragments ) {
 // ============ INICI CODI A COMPLETAR ===============
 // Iniciar el fragment corresponent a tablet, enviant l’argument de la posició seleccionada
+
+                    /*
+                     * En caso que la pantalla sea mayor que 900dp de ancho se sabrà por la variable
+                     * twoFragments. En caso que sea cierta se carga el fragment pasando por argumento
+                     * la posicion del book en la lista de books.
+                     * En lugar de realizar un add() se realiza un replace() porque en este caso ya
+                     * existe el fragment cargado y lo que queremos hacer es cambiar-lo por otro.
+                     */
                     BookDetailFragment bookDetailFragment = new BookDetailFragment();
                     Bundle posArg = new Bundle();
-                    posArg.putInt("position",position);
+                    posArg.putInt("position",currentPos);
                     bookDetailFragment.setArguments(posArg);
 
                     FragmentManager manager = ((FragmentActivity)mContext).getSupportFragmentManager();
@@ -110,9 +125,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 } else {
 // ============ INICI CODI A COMPLETAR ===============
 // Iniciar l’activitat corresponent a mòbil, enviant l’argument de la posició seleccionada
+
+                    /*
+                     * En caso que sea una pantalla pequeña, twoFragments sera falso y se
+                     * realizara la llamada a la activity BookDetailActivity con un intent.
+                     * Se pasa por parametro extra la posicion que sera catpturada en la activity.
+                     */
                     Intent intent = new Intent(v.getContext(), BookDetailActivity.class);
-                    intent.putExtra("position", position);
+                    intent.putExtra("position", currentPos);
                     mContext.startActivity(intent);
+
 // ============ FI CODI A COMPLETAR =================
                 }
             }
@@ -129,6 +151,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public int getItemViewType(int position) {
 
+        //Si la posicion es par, se devuelve el type como EVEN, sino se devuelve ODD.
         int type = ODD;
         if (position % 2 == 0) type = EVEN;
         return type;
@@ -140,6 +163,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
     ///////////////////////// ViewHolderItem //////////////////////
+    /*
+     * Se crea la classe ViewHolder subclasse de RecyclerView.ViewHolder. Se guarda las referencias
+     * a los elementos del layout titol y autor y del conjunto de la vista del item. Tambien se guarda
+     * el book concreto y la posicion.
+     */
 
     public class ViewHolderItem extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -148,6 +176,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public BookContent.BookItem item;
         public int position;
 
+        //En el constructor del viewHolder se obtiene la referencia a los elementos del layout guardados.
         public ViewHolderItem(View itemView) {
             super(itemView);
 

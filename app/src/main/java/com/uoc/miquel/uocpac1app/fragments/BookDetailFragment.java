@@ -1,19 +1,14 @@
 package com.uoc.miquel.uocpac1app.fragments;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.uoc.miquel.uocpac1app.R;
@@ -23,7 +18,7 @@ import java.text.SimpleDateFormat;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * BookDetailFragment se encarga de gestionar el fragment
  */
 public class BookDetailFragment extends Fragment {
 
@@ -37,12 +32,21 @@ public class BookDetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        //Recogemos los argumentos para obtener la posicion del book en la lista y se asigna a
+        //la variable global book.
         Bundle args = getArguments();
         if (args != null) {
             book = BookContent.ITEMS.get(args.getInt("position"));
         }
     }
 
+    /*
+     * En onCreateView se muestra por pantalla el layout guardando la referencia a la vista para poder
+     * obtener las referencias a los elementos visibles. Creamos los elementos del layout, los enlazamos
+     * y, en caso que se haya recibido una posicion por argumento, se introduciran estos datos para
+     * que sean visibles en pantalla.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,6 +61,8 @@ public class BookDetailFragment extends Fragment {
             data.setText(dateFormat.format(book.getDataPublicacio()));
             autor.setText(book.getAutor());
             desc.setText(book.getDescripcio());
+            //Picasso es una libreria de imagenes open source bajo licencia Apache 2.0
+            // http://square.github.io/picasso/
             Picasso.with(view.getContext()).load(book.getImgUrl()).fit().centerInside().into(img);
         }
         return view;

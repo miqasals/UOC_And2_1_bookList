@@ -5,11 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by mucl on 10/10/2016.
+ * Se crea la clase BookContent que simularia la obtencion de datos de un sistema de persistencia.
  */
 public class BookContent {
-
-
 
     public static final List<BookItem> ITEMS = new ArrayList<>();
     private static final String URL = "http://www.gigamesh.com/assets/images/catalog/danza-de-dragones-3.jpg";
@@ -22,6 +20,8 @@ public class BookContent {
             ITEMS.add(book2);
         }
         */
+
+    // Se sustituye el codigo propuesto para introducir mas elementos en la lista.
     static {
         for (int i = 1; i < 10; i++) {
             BookItem book = new BookItem( i , "Title" + i , "Author" + i , new Date(), "Description" , URL );
@@ -34,6 +34,11 @@ public class BookContent {
     }
 
 
+
+
+    /*
+     * Clase estatica correspondiente a un elemento Book.
+     */
     public static class BookItem {
         private int identificador;
         private String titol;
