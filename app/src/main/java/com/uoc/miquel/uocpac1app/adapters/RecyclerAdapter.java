@@ -3,7 +3,6 @@ package com.uoc.miquel.uocpac1app.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Miquel Casals on 13/10/2016.
+ * Adaptador que se encarga de rellenar y mostrar por pantalla todos los elementos de la lista
+ * RecyclerView. Se crea la clase para el EX2 siguiendo la pauta de la documentacion de la
+ * asignatura.
  */
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

@@ -1,20 +1,24 @@
 package com.uoc.miquel.uocpac1app.activities;
 
 import android.content.Intent;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.uoc.miquel.uocpac1app.R;
 import com.uoc.miquel.uocpac1app.fragments.BookDetailFragment;
 import com.uoc.miquel.uocpac1app.model.BookContent;
 
+/**
+ * La clase BookDetailActivity se encarga de gestionar, en caso que el dispositivo
+ * sea de menos de 900dp de ancho, la vista de los detalles del libro seleccionado
+ * de la lista.
+ * Muestra los datos sobre un layout coordinatorLayout y un fragmentLayout donde se
+ * cargaran los datos.
+ */
 public class BookDetailActivity extends AppCompatActivity {
 
 
@@ -23,20 +27,19 @@ public class BookDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_detail);
 
+        //Creamos el objeto toolbar para poder cambiar el titulo al nombre del book.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_book_detail);
-        //setSupportActionBar(toolbar);
-
         ActionBar actionBar = getSupportActionBar();
+        //Activamos el boton de vuelta atras a la activity Book List.
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        //Es crea instancia de l'activity que controlarà el fragment
+        //Se crea instancia de la clase que gestiona el fragment.
         BookDetailFragment bookDetailFrag = new BookDetailFragment();
 
-        //Es crea un bundle per afegir al fragemnt un element per mostrar per defecte.
+        //Creamos un Bundle para poder enviar datos (posicion del book elegido) al fragment.
         Bundle posArg = new Bundle();
-
         int pos = getIntent().getIntExtra("position",0);
         posArg.putInt("position",pos);
 
@@ -46,13 +49,14 @@ public class BookDetailActivity extends AppCompatActivity {
         titol.setText(BookContent.ITEMS.get(posArg.getInt("position")).getTitol());
         */
 
+        //Se modifica el titulo para que muestre el titulo del libro. Se hace aqui porque necesitamos
+        //haver recibido de BookListActivity la posicion a través del Intent.
         toolbar.setTitle(BookContent.ITEMS.get(posArg.getInt("position")).getTitol());
 
-
-        //Es recupera els EXTRAS de l'Intent rebut i es passen directament al fragment.
+        //Se pasa el bundle al fragment.
         bookDetailFrag.setArguments(posArg);
 
-        //Enllaça el fragment bookDetailFrag al contenidor frag_book_detail.
+        //Enlazamos el layout y la instancia del fragment para que se inicie y se muestre por pantalla.
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.frag_book_detail, bookDetailFrag)
@@ -62,7 +66,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
     }
 
-
+    //Configuramos las acciones de la actionBar. En este caso solo hay la opcion de volver atras.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

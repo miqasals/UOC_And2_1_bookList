@@ -16,7 +16,6 @@
         android:layout_marginBottom="8dp">
 
     <TextView
-        android:text="Title odd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -27,7 +26,6 @@
         android:id="@+id/book_item_title" />
 
     <TextView
-        android:text="author odd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

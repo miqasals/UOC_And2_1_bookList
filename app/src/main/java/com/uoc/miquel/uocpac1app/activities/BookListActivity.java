@@ -12,19 +12,19 @@ import com.uoc.miquel.uocpac1app.model.BookContent;
 
 
 /*
-    Fonts consultades:
-        - FragmentBasics sample de Android Developers.
-        - https://github.com/codepath/android_guides/wiki/Using-an-ArrayAdapter-with-ListView
+ * BookListActivity se encarga de comprobar si el dispositivo es mas ancho de 900dp y, en caso
+ * que sea mas pequeño, se mostrara unicamente la lista gestionando los clicks. Si es mas grande
+ * de este tamaño la lista ocupara una tercera parte de la pantalla y los detalles se mostraran
+ * al lado con un fragment.
  */
-
-
 public class BookListActivity extends AppCompatActivity {
 
-    private static final int DEFAULT_ELEMENT = 0;
     private boolean twoFragments = false;
 
-    // https://developer.android.com/training/material/lists-cards.html?hl=es
-    // Variables globals per la llista RecyclerView.
+    // Fuente: "https://developer.android.com/training/material/lists-cards.html?hl=es"
+    // Variables globales para el objeto RecyclerView. Se crean globales porque en
+    // la documentacion se indica asi y es posible que se requieran globales mas adelante.
+    // En este momento podrian haverse creado locales en onCreate sin problemas.
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -34,24 +34,26 @@ public class BookListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list);
 
-        /* EXERCICI1 - Es comprova si hi ha guardat un estat de l'activity.
+        /* EXERCICI1 - Con recycler view no es necesario.
+        //Es comprova si hi ha guardat un estat de l'activity.
         if (savedInstanceState != null) {
             return;
         }*/
 
-        // indiquem en el boolea si tindrem dos panells o no.
+        // Guardamos en un booleano si la pantalla es de mas de 900dp de ancho y ha cargado el
+        // el layout del fragment.
         twoFragments = findViewById(R.id.frag_book_detail) != null;
 
 
-        //Es busca, primerament, l'element RecyclerView del layout.
+        //Buscamos el elemento del layout correspondiente al recyclerView.
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_book_list);
-        //Es crea el gestor de layout.
+        //Creamos el gestor de vista.
         mLayoutManager = new LinearLayoutManager(this);
-        //S'assigna el gestor de layout a la llista que tenim.
+        //Asociamos el gestor del layout con la lista.
         mRecyclerView.setLayoutManager(mLayoutManager);
-        //Es crea l'adaptador passant el context i la llista d'elements per parametre.
+        //Creamos el adaptador pasando la lista de elementos y el booleano que indica si hay el fragment.
         mAdapter = new RecyclerAdapter(this, BookContent.ITEMS, twoFragments);
-        //S'assigna l'adaptador a la llista.
+        //Se asocia el adaptador a la lista. Este hincha la lista y la muestra por pantalla.
         mRecyclerView.setAdapter(mAdapter);
 
 
@@ -72,27 +74,15 @@ public class BookListActivity extends AppCompatActivity {
 
 
         /*
-        Si twoFragments = true, vol dir que el panell del FrameLayour de detalls s'ha carregat
-        i, per tant, ens trobem amb una pantalla de mes de 900dp. Al existir aquest panell s'ha
-        de crear també l'activity que el gestiona (BookDetailFragment) i iniciar el fragment amb
-        l'ajuda de FragmentManager.
+         * Si twoFragments = true, indica que el panel FrameLayout de detalles se ha cargado y, por
+         * lo tanto se trata de una pantalla de mas de 900dp de ancho. Al existir este panel se deberá
+         * crear iniciar la informacion del fragment.
          */
         if (twoFragments) {
-            //Es crea instancia de l'activity que controlarà el fragment
+            //Se crea instancia de la clase que gestiona el fragmen.
             BookDetailFragment bookDetailFrag = new BookDetailFragment();
 
-            /*  NO FA FALTA.....
-            //Es crea un bundle per afegir al fragemnt un element per mostrar per defecte.
-            Bundle posArg = new Bundle();
-            /* Per defecte indicarem que es mostri el primer element de la llista ja que si ho
-             * fem per identificador es possible que es modifiques la llista i aquest no existis.
-             *
-            posArg.putInt(BOOK_ID,BookContent.ITEMS.get(DEFAULT_ELEMENT).getIdentificador());
-            bookDetailFrag.setArguments(posArg);
-*/
-
-
-            //Enllaça el fragment bookDetailFrag al contenidor frag_book_detail.
+            //Inicializamos el fragment sobre el layout correspondiente y se muestra por pantalla.
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.frag_book_detail, bookDetailFrag)

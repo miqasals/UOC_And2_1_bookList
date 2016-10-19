@@ -15,27 +15,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by mucl on 10/10/2016.
- *
- * s'encarrega de mostrar per pantalla la llista de llibres amb les dades
- * que volem incloure. Utilitzat en el disseny de l'aplicació en l'EXERCICI 1.
+ * Se encarga de mostrar por pantalla la lista de libros con los datos que queremos
+ * introducir. Utilizado en el disseño de la aplicacion del EJERCICIO 1.
  */
 
 public class BookListAdapter extends ArrayAdapter<BookContent> {
 
-    // Creem un Array de llibres per tal de poder accedir després des del mètode getView.
+    // Creamos un array de libros para poder acceder mas tarde desde el metodo getView().
     private ArrayList<BookContent> books;
 
-    // Constructor per defecte afegint la assignació de la llista de llibres a la propietat books
+    // Constructor por defecto asociando la lista de libros recibida con la variable global de la clase.
     public BookListAdapter(Context context, int resource, List<BookContent> objects) {
         super(context, resource, objects);
         this.books = (ArrayList<BookContent>) objects;
     }
 
     /*
-    Es sobreescriu getView per tal que, quan es fa la crida implicita a aquest mètode
-    amb la comanda setAdapter sobre la llista, tots els elements de la llista otbinguin
-    les seves dades corresponents.
+     * Se sobreescribe getView para que, cuando se realiza la llamada implicita a este metodo
+     * con el comando setAdapter(...) sobre la lista, todos los elementos de la lista obtengan
+     * los datos que les corresponde.
      */
     @NonNull
     @Override
@@ -44,11 +42,11 @@ public class BookListAdapter extends ArrayAdapter<BookContent> {
         ViewHolder holder;
 
         /*
-        Es comprova que no existeixi ja una View en memòria de l'item de la llista. Si
-        no existeix, es crea una View i la instancia de ViewHolderItem i s'obté la referencia
-        dels elements de la vista en el holder per poder actuar sobre ells. En cas que ja
-        existeixi una vista i tingui guardat la referència del holder com a tag, es recupera
-        i s'actua sobre els elements modificant el text.
+         * Se comprueba si el elemento que se va a cargar esta guardado en memoria o no. En caso que
+         * ya exista una version en memoria del item, se carga el objeto ViewHolder gracias a la referencia
+           guardada en el tag de la vista. Sino, se crea la vista y se inicializa el viewholder para guardarlo
+           luego en el tag de la vista. En ambos casos se obtiene la referencia de los elementos de pantalla
+           de la lista y se modifican con los datos correspondientes a la posicion del libro.
          */
         if (convertView == null || convertView.getTag() == null) {
             holder = new ViewHolder();
@@ -62,18 +60,18 @@ public class BookListAdapter extends ArrayAdapter<BookContent> {
         }
 
         BookContent book = books.get(position);
-
+        // Comentado para que no de error de compilacion ya que en el EX2 ha habido cambios en la clase.
         //holder.bookId.setText(String.valueOf(book.getId()));
-        //holder.bookName.setText(book.getName());              // Al modificar la classe book getName i getId s'anulen.
+        //holder.bookName.setText(book.getName());
 
         return convertView;
     }
 
 
     /*
-    ViewHolderItem es una classe estatica que ens evita realitzar més d'una instancia en memoria
-    de cada element visual per tal d'evitar successives crides a metodes de cerca com
-    findViewById que consumeix bastants recursos.
+     * ViewHolder es una clase estatica que nos evita realizar mas de una instancia en memoria
+     * de cada elemento visual para ahorar-nos reiteradas llamadas a metodos de localizacion como
+     * findViewById, que consume muchos recursos.
      */
     static class ViewHolder {
         protected TextView bookId;
