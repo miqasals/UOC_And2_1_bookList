@@ -32,9 +32,6 @@ public class BookDetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        //Recogemos los argumentos para obtener la posicion del book en la lista y se asigna a
-        //la variable global book.
         Bundle args = getArguments();
         if (args != null) {
             book = BookContent.ITEMS.get(args.getInt("position"));
@@ -61,8 +58,6 @@ public class BookDetailFragment extends Fragment {
             data.setText(dateFormat.format(book.getDataPublicacio()));
             autor.setText(book.getAutor());
             desc.setText(book.getDescripcio());
-            //Picasso es una libreria de imagenes open source bajo licencia Apache 2.0
-            // http://square.github.io/picasso/
             Picasso.with(view.getContext()).load(book.getImgUrl()).fit().centerInside().into(img);
         }
         return view;

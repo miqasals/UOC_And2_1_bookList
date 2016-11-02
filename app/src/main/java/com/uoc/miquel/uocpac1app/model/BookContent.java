@@ -12,15 +12,6 @@ public class BookContent {
     public static final List<BookItem> ITEMS = new ArrayList<>();
     private static final String URL = "http://www.gigamesh.com/assets/images/catalog/danza-de-dragones-3.jpg";
 
-    /*
-    static {
-            BookItem book1 = new BookItem( 0 , "Title1" , "Author1" , new Date(), "Description" , URL );
-            BookItem book2 = new BookItem( 1 , "Title2" , "Author2" , new Date(), "Description 2" , URL );
-            ITEMS.add(book1);
-            ITEMS.add(book2);
-        }
-        */
-
     // Se sustituye el codigo propuesto para introducir mas elementos en la lista.
     static {
         for (int i = 1; i < 10; i++) {
@@ -32,9 +23,6 @@ public class BookContent {
 
     public BookContent() {
     }
-
-
-
 
     /*
      * Clase estatica correspondiente a un elemento Book.
