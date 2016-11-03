@@ -1,5 +1,7 @@
 package com.uoc.miquel.uocpac1app.model;
 
+import com.orm.SugarRecord;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +11,9 @@ import java.util.List;
  */
 public class BookContent {
 
-    public static final List<BookItem> ITEMS = new ArrayList<>();
+    //public static final List<BookItem> ITEMS = new ArrayList<>();
+
+    /* Codi PAC1
     private static final String URL = "http://www.gigamesh.com/assets/images/catalog/danza-de-dragones-3.jpg";
 
     // Se sustituye el codigo propuesto para introducir mas elementos en la lista.
@@ -19,15 +23,28 @@ public class BookContent {
             ITEMS.add(book);
         }
     }
-
+    */
 
     public BookContent() {
     }
 
+    //TODO: REVISAR!!!!!!!!!!!!!!!!!! No el trobarem amb el mateix id. Mirar metode find().
+    public static boolean exists(BookItem bookItem){
+        // Obtenim l'element
+        BookItem book = BookItem.findById(BookItem.class,bookItem.getIdentificador());
+        return (book != null);
+    }
+
+
+    public static List<BookItem> getBooks(){
+        return BookItem.listAll(BookItem.class);
+    }
+
+
     /*
      * Clase estatica correspondiente a un elemento Book.
      */
-    public static class BookItem {
+    public static class BookItem extends SugarRecord {
         private int identificador;
         private String titol;
         private String autor;
@@ -95,7 +112,21 @@ public class BookContent {
         public String getImgUrl() {
             return imgUrl;
         }
-    }
 
+
+
+        //TODO: Comprovar si es necessari sobreescriure equals. (BookListActivity.class)
+        @Override
+        public boolean equals(Object obj) {
+            BookItem book = (BookItem) obj;
+            if (book == null) return false;
+            return (this.identificador == book.getIdentificador()&&
+                    this.titol.equals(book.getTitol()) &&
+                    this.autor.equals(book.getAutor()) &&
+                    this.dataPublicacio.equals(book.getDataPublicacio()) &&
+                    this.descripcio.equals(book.getDescripcio()) &&
+                    this.imgUrl.equals(book.getImgUrl()));
+        }
+    }
 
 }

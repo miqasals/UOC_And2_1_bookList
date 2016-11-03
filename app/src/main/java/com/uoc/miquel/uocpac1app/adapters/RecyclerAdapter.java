@@ -76,13 +76,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         viewHolder.item = items.get(position);
         viewHolder.titol.setText(items.get(position).getTitol());
         viewHolder.autor.setText(items.get(position).getAutor());
-        viewHolder.position = position;
+        viewHolder.view.setTag(position);
         viewHolder.view.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int currentPos;
-
-                currentPos = position;
+                int currentPos = (int) v.getTag();
 
                 if ( twoFragments ) {
                     BookDetailFragment bookDetailFragment = new BookDetailFragment();
@@ -130,7 +128,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public View view;
         public TextView titol,autor;
         public BookContent.BookItem item;
-        public int position;
 
         public ViewHolderItem(View itemView) {
             super(itemView);

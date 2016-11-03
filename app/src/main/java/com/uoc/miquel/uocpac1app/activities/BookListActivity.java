@@ -14,7 +14,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.uoc.miquel.uocpac1app.R;
 import com.uoc.miquel.uocpac1app.adapters.RecyclerAdapter;
 import com.uoc.miquel.uocpac1app.fragments.BookDetailFragment;
@@ -34,8 +38,8 @@ public class BookListActivity extends AppCompatActivity {
 
     //Inicialitzem les variables corresponents a Firebase.
     private FirebaseAuth mAuth;
-    private FirebaseDatabase database;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mBookReference;
 
 
     @Override
@@ -47,7 +51,14 @@ public class BookListActivity extends AppCompatActivity {
 
         //Inicialitzem les variables d'autenticacio i base de dades Firebase.
         mAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase. getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
+        mBookReference = mDatabase.getReference().child("books");
+        /*
+         * Obtenim una referencia a la base de dades a nivell de Book per tal que quan hi hagi un
+         * canvi en un element ens passara l'objecte complet a la variable snapshot i no la llista
+         * completa d'elements (books) de la base de dades firebase.
+         */
+
 
         //Autentiquem l'aplicacio a la base de dades.
         mAuth.signInWithEmailAndPassword("miqasals@gmail.com", "123456")
@@ -72,19 +83,55 @@ public class BookListActivity extends AppCompatActivity {
                     }
                 });
 
+         mBookReference.addValueEventListener(new ValueEventListener(){
 
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+
+                //S'obte l'objecte BookItem del snapshot
+                BookContent.BookItem book = dataSnapshot.getValue(BookContent.BookItem.class);
+                //En cas que no existeixi el guardem a la base de dades local.
+                if (!BookContent.exists(book)) {
+                    book.save();
+                //En cas que existeixi, comprovem si hi ha algun canvi en les dades
+                } else {
+                    //Obtenim el book guardat a la base de dades local
+                    BookContent.BookItem storedBook = BookContent.BookItem.findById(
+                            BookContent.BookItem.class,book.getIdentificador());
+                    //El comparem amb el rebut i, si no es exacte es copia i es torna a guardar.
+                    if (!book.equals(storedBook)){
+                        //TODO: Crear un mètode que copii els objectes.
+                        storedBook = book;
+                        storedBook.save();
+                    }
+
+
+                    /*
+                     * TODO: Revisar la comprovació de si el book existeix ja que el findById comprova el id
+                     * i els guardats a firebase no tenen aquest id. Provablement el metode exists ha de
+                     * comprovar un a un tots els elements comprovant la propietat identificador.
+                     */
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", databaseError.toException());
+            }
+        });
 
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_book_list);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new RecyclerAdapter(this, BookContent.ITEMS, twoFragments);
+        // Canviem l'origen de dades de BookContent.ITEMS a BookContent.getBooks().
+        mAdapter = new RecyclerAdapter(this, BookContent.getBooks(), twoFragments);
         mRecyclerView.setAdapter(mAdapter);
 
-        //Inicialitzem les variables d'autenticacio i base de dades Firebase.
-        mAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase. getInstance();
 
         //Es comprova si tenim el fragment present en pantalla.
         if (twoFragments) {
