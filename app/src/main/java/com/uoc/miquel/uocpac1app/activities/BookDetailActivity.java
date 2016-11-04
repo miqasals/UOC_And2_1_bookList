@@ -37,7 +37,8 @@ public class BookDetailActivity extends AppCompatActivity {
         Bundle posArg = new Bundle();
         int pos = getIntent().getIntExtra("position",0);
         posArg.putInt("position",pos);
-        toolbar.setTitle(BookContent.ITEMS.get(posArg.getInt("position")).getTitol());
+        //TODO: BookDetailActivity - Obtenir el titol del llibre des de bd local.
+        toolbar.setTitle(BookContent.getBooks().get(posArg.getInt("position")).getTitle());
         bookDetailFrag.setArguments(posArg);
         getSupportFragmentManager()
                 .beginTransaction()

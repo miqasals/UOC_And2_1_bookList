@@ -2,40 +2,27 @@ package com.uoc.miquel.uocpac1app.model;
 
 import com.orm.SugarRecord;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Se crea la clase BookContent que simularia la obtencion de datos de un sistema de persistencia.
+ * La classe BookContent gestiona l'accés a la base de dades local de l'aplicació. S'implementa la classe
+ * interna BookItem com a model i la clase contenedora disposa dels mètodes per obtenir administrar les dades.
+ * La gestió de la base de dades es realitza amb la llibreria SugarORM heredant la classe SugarRecord.
  */
 public class BookContent {
 
-    //public static final List<BookItem> ITEMS = new ArrayList<>();
-
-    /* Codi PAC1
-    private static final String URL = "http://www.gigamesh.com/assets/images/catalog/danza-de-dragones-3.jpg";
-
-    // Se sustituye el codigo propuesto para introducir mas elementos en la lista.
-    static {
-        for (int i = 1; i < 10; i++) {
-            BookItem book = new BookItem( i , "Title" + i , "Author" + i , new Date(), "Description" , URL );
-            ITEMS.add(book);
-        }
-    }
-    */
 
     public BookContent() {
     }
 
-    //TODO: REVISAR!!!!!!!!!!!!!!!!!! No el trobarem amb el mateix id. Mirar metode find().
+    //Si la cerca del titol + autor dona com a resultat una llista de un o mes elements retorna true.
     public static boolean exists(BookItem bookItem){
-        // Obtenim l'element
-        BookItem book = BookItem.findById(BookItem.class,bookItem.getIdentificador());
-        return (book != null);
+        return ((BookItem.find(BookItem.class, "title = ? and author = ?",
+                String.valueOf(bookItem.getTitle()),bookItem.getAuthor()).size())>0);
     }
 
-
+    //Es retorna la llista completa de llibres guardats a la base de dades local.
     public static List<BookItem> getBooks(){
         return BookItem.listAll(BookItem.class);
     }
@@ -44,89 +31,70 @@ public class BookContent {
     /*
      * Clase estatica correspondiente a un elemento Book.
      */
-    public static class BookItem extends SugarRecord {
-        private int identificador;
-        private String titol;
-        private String autor;
-        private Date dataPublicacio;
-        private String descripcio;
-        private String imgUrl;
+    public class BookItem extends SugarRecord {
+        private String title;
+        private String author;
+        private String publication_date;
+        private String description;
+        private String url_image;
 
+
+        //Constructor buit
         public BookItem (){
         }
 
 
-        public BookItem(int identificador, String titol, String autor, Date dataPublicacio, String descripcio, String imgUrl) {
-            this.identificador = identificador;
-            this.titol = titol;
-            this.autor = autor;
-            this.dataPublicacio = dataPublicacio;
-            this.descripcio = descripcio;
-            this.imgUrl = imgUrl;
-        }
-
-        public void setIdentificador(int identificador) {
-            this.identificador = identificador;
-        }
-
-        public void setTitol(String titol) {
-            this.titol = titol;
-        }
-
-        public void setAutor(String autor) {
-            this.autor = autor;
-        }
-
-        public void setDataPublicacio(Date dataPublicacio) {
-            this.dataPublicacio = dataPublicacio;
-        }
-
-        public void setDescripcio(String descripcio) {
-            this.descripcio = descripcio;
-        }
-
-        public void setImgUrl(String imgUrl) {
-            this.imgUrl = imgUrl;
-        }
-
-        public int getIdentificador() {
-            return identificador;
-        }
-
-        public String getTitol() {
-            return titol;
-        }
-
-        public String getAutor() {
-            return autor;
-        }
-
-        public Date getDataPublicacio() {
-            return dataPublicacio;
-        }
-
-        public String getDescripcio() {
-            return descripcio;
-        }
-
-        public String getImgUrl() {
-            return imgUrl;
+        public BookItem(int identificador, String title, String author, String publication_date,
+                        String description, String url_image) {
+            this.title = title;
+            this.author = author;
+            this.publication_date = publication_date;
+            this.description = description;
+            this.url_image = url_image;
         }
 
 
-
-        //TODO: Comprovar si es necessari sobreescriure equals. (BookListActivity.class)
-        @Override
-        public boolean equals(Object obj) {
-            BookItem book = (BookItem) obj;
-            if (book == null) return false;
-            return (this.identificador == book.getIdentificador()&&
-                    this.titol.equals(book.getTitol()) &&
-                    this.autor.equals(book.getAutor()) &&
-                    this.dataPublicacio.equals(book.getDataPublicacio()) &&
-                    this.descripcio.equals(book.getDescripcio()) &&
-                    this.imgUrl.equals(book.getImgUrl()));
+        // GETTERS & SETTERS
+        public void setTitle(String title) {
+            this.title = title;
         }
+
+        public void setAuthor(String author) {
+            this.author = author;
+        }
+
+        public void setPublication_date(String publication_date) {
+            this.publication_date = publication_date;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public void setUrl_image(String url_image) {
+            this.url_image = url_image;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public String getPublication_date() {
+            return publication_date;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getUrl_image() {
+            return url_image;
+        }
+
     }
 
 }

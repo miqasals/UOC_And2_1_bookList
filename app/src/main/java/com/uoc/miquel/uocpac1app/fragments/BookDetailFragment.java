@@ -34,7 +34,8 @@ public class BookDetailFragment extends Fragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            book = BookContent.ITEMS.get(args.getInt("position"));
+            //TODO: BookDetailFragment.java - Obtenir el book concret.
+            book = BookContent.getBooks().get(args.getInt("position"));
         }
     }
 
@@ -54,11 +55,10 @@ public class BookDetailFragment extends Fragment {
         TextView desc = (TextView) view.findViewById(R.id.book_detail_desc);
         ImageView img = (ImageView) view.findViewById(R.id.book_detail_img);
         if (book != null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            data.setText(dateFormat.format(book.getDataPublicacio()));
-            autor.setText(book.getAutor());
-            desc.setText(book.getDescripcio());
-            Picasso.with(view.getContext()).load(book.getImgUrl()).fit().centerInside().into(img);
+            data.setText(book.getPublication_date());
+            autor.setText(book.getAuthor());
+            desc.setText(book.getDescription());
+            Picasso.with(view.getContext()).load(book.getUrl_image()).fit().centerInside().into(img);
         }
         return view;
     }

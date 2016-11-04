@@ -42,6 +42,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
 
+    public void setItems(List<BookContent.BookItem> items) {
+        this.items = new ArrayList<>(items);
+    }
+
+
     /*
     onCrateViewHolder se encarga de inflar la vista del elemento y la devuelve para que
     es muestre p0r pantalla.
@@ -74,8 +79,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         final ViewHolderItem viewHolder = (ViewHolderItem) holder;
         viewHolder.item = items.get(position);
-        viewHolder.titol.setText(items.get(position).getTitol());
-        viewHolder.autor.setText(items.get(position).getAutor());
+        viewHolder.titol.setText(items.get(position).getTitle());
+        viewHolder.autor.setText(items.get(position).getAuthor());
         viewHolder.view.setTag(position);
         viewHolder.view.setOnClickListener( new View.OnClickListener() {
             @Override
@@ -115,7 +120,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (position % 2 == 0) type = EVEN;
         return type;
     }
-
 
 
 

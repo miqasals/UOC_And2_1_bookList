@@ -1,5 +1,8 @@
 package com.uoc.miquel.uocpac1app.activities;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -18,11 +21,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.uoc.miquel.uocpac1app.R;
 import com.uoc.miquel.uocpac1app.adapters.RecyclerAdapter;
 import com.uoc.miquel.uocpac1app.fragments.BookDetailFragment;
 import com.uoc.miquel.uocpac1app.model.BookContent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /*
@@ -32,9 +39,13 @@ public class BookListActivity extends AppCompatActivity {
 
     private static final String TAG = "BookListActivity . . .";
     private boolean twoFragments = false;
+    private boolean isConnected = false;
+    private boolean isAuthenticated = false;
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private RecyclerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+
+    private List<BookContent.BookItem> bookItemList;
 
     //Inicialitzem les variables corresponents a Firebase.
     private FirebaseAuth mAuth;
@@ -47,92 +58,62 @@ public class BookListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list);
 
+        //https://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html#DetermineType
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        ////////////////////////////////////////////////////////////////////// ----¿Necessari?
+
         twoFragments = findViewById(R.id.frag_book_detail) != null;
+
+        mAdapter = new RecyclerAdapter(this, bookItemList, twoFragments);
 
         //Inicialitzem les variables d'autenticacio i base de dades Firebase.
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
-        mBookReference = mDatabase.getReference().child("books");
-        /*
-         * Obtenim una referencia a la base de dades a nivell de Book per tal que quan hi hagi un
-         * canvi en un element ens passara l'objecte complet a la variable snapshot i no la llista
-         * completa d'elements (books) de la base de dades firebase.
-         */
-
+        mBookReference = mDatabase.getReference("books");
 
         //Autentiquem l'aplicacio a la base de dades.
+        signInFirebase();
+
+        if (isAuthenticated && isConnected){
+            addFirebaseReferenceListener();
+            mAdapter.setItems(bookItemList);
+        } else {
+            bookItemList = BookContent.getBooks();
+        }
+
+        setUI();
+    }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    private void signInFirebase() {
         mAuth.signInWithEmailAndPassword("miqasals@gmail.com", "123456")
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithEmail:failed", task.getException());
-                            Toast.makeText(BookListActivity.this, "Autenticació fallida",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(BookListActivity.this, "Autenticació completada",
-                                    Toast.LENGTH_SHORT).show();
-                        }
+                        isAuthenticated = task.isSuccessful();
 
-                        // ...
                     }
                 });
+    }
 
-         mBookReference.addValueEventListener(new ValueEventListener(){
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-
-                //S'obte l'objecte BookItem del snapshot
-                BookContent.BookItem book = dataSnapshot.getValue(BookContent.BookItem.class);
-                //En cas que no existeixi el guardem a la base de dades local.
-                if (!BookContent.exists(book)) {
-                    book.save();
-                //En cas que existeixi, comprovem si hi ha algun canvi en les dades
-                } else {
-                    //Obtenim el book guardat a la base de dades local
-                    BookContent.BookItem storedBook = BookContent.BookItem.findById(
-                            BookContent.BookItem.class,book.getIdentificador());
-                    //El comparem amb el rebut i, si no es exacte es copia i es torna a guardar.
-                    if (!book.equals(storedBook)){
-                        //TODO: Crear un mètode que copii els objectes.
-                        storedBook = book;
-                        storedBook.save();
-                    }
-
-
-                    /*
-                     * TODO: Revisar la comprovació de si el book existeix ja que el findById comprova el id
-                     * i els guardats a firebase no tenen aquest id. Provablement el metode exists ha de
-                     * comprovar un a un tots els elements comprovant la propietat identificador.
-                     */
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", databaseError.toException());
-            }
-        });
-
-
-
+    private void setUI() {
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_book_list);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         // Canviem l'origen de dades de BookContent.ITEMS a BookContent.getBooks().
-        mAdapter = new RecyclerAdapter(this, BookContent.getBooks(), twoFragments);
         mRecyclerView.setAdapter(mAdapter);
 
-
+        //TODO: Provar si aixo es pot treure...
         //Es comprova si tenim el fragment present en pantalla.
         if (twoFragments) {
             BookDetailFragment bookDetailFrag = new BookDetailFragment();
@@ -142,5 +123,30 @@ public class BookListActivity extends AppCompatActivity {
                     .add(R.id.frag_book_detail, bookDetailFrag)
                     .commit();
         }
+    }
+
+    private void addFirebaseReferenceListener() {
+        mBookReference.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                GenericTypeIndicator<ArrayList<BookContent.BookItem>> t =
+                        new GenericTypeIndicator<ArrayList<BookContent.BookItem>>() {};
+                ArrayList<BookContent.BookItem> fbBooks = dataSnapshot.getValue(t);
+                if (fbBooks != null) {
+                    for (BookContent.BookItem book : fbBooks) {
+                        if (!BookContent.exists(book)) {
+                            book.save(); //TODO: Si hi ha algun canvi en algun llibre no s'esta guardant.
+
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                bookItemList = BookContent.getBooks();
+            }
+        });
     }
 }
