@@ -35,21 +35,21 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
 
-    public RecyclerAdapter(Context context, List<BookContent.BookItem> o, boolean num) {
+    public RecyclerAdapter(Context context, List<BookContent.BookItem> obj, boolean num) {
         this.mContext = context;
-        this.items = new ArrayList<>(o);
+        this.items = new ArrayList<>(obj);
         this.twoFragments = num;
     }
 
 
     public void setItems(List<BookContent.BookItem> items) {
-        this.items = new ArrayList<>(items);
+            this.items = new ArrayList<>(items);
     }
 
 
     /*
     onCrateViewHolder se encarga de inflar la vista del elemento y la devuelve para que
-    es muestre p0r pantalla.
+    es muestre por pantalla.
      */
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -111,7 +111,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return this.items.size();
+        if(items!=null) {
+            return this.items.size();
+        } else {
+            return 0;
+        }
     }
 
     @Override

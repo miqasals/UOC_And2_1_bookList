@@ -11,12 +11,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,15 +35,12 @@ import java.util.List;
  */
 public class BookListActivity extends AppCompatActivity {
 
-    private static final String TAG = "BookListActivity . . .";
+    public static final String TAG = "-----PAC2------";
     private boolean twoFragments = false;
     private boolean isConnected = false;
-    private boolean isAuthenticated = false;
     private RecyclerView mRecyclerView;
     private RecyclerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-
-    private List<BookContent.BookItem> bookItemList;
 
     //Inicialitzem les variables corresponents a Firebase.
     private FirebaseAuth mAuth;
@@ -68,46 +63,61 @@ public class BookListActivity extends AppCompatActivity {
 
         twoFragments = findViewById(R.id.frag_book_detail) != null;
 
-        mAdapter = new RecyclerAdapter(this, bookItemList, twoFragments);
+
+        mAdapter = new RecyclerAdapter(this, BookContent.getBooks(), twoFragments);
 
         //Inicialitzem les variables d'autenticacio i base de dades Firebase.
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mBookReference = mDatabase.getReference("books");
 
-        //Autentiquem l'aplicacio a la base de dades.
-        signInFirebase();
-
-        if (isAuthenticated && isConnected){
-            addFirebaseReferenceListener();
-            mAdapter.setItems(bookItemList);
-        } else {
-            bookItemList = BookContent.getBooks();
-        }
-
-        setUI();
-    }
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-    private void signInFirebase() {
+        //Autentiquem l'aplicacio a la base de dades
         mAuth.signInWithEmailAndPassword("miqasals@gmail.com", "123456")
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
 
-                        isAuthenticated = task.isSuccessful();
+                        if (task.isSuccessful() && isConnected){
+                            Log.i(TAG,"CONECTAT I AUTENTICAT");
+
+                            mBookReference.addValueEventListener(new ValueEventListener() {
+
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                    GenericTypeIndicator<ArrayList<BookContent.BookItem>> t =
+                                            new GenericTypeIndicator<ArrayList<BookContent.BookItem>>() {};
+                                    ArrayList<BookContent.BookItem> fbBooks = dataSnapshot.getValue(t);
+                                    if (fbBooks != null) {
+                                        for (BookContent.BookItem book : fbBooks) {
+                                            if (!BookContent.exists(book)) {
+                                                book.save(); //TODO: Si hi ha algun canvi en algun llibre no s'esta guardant.
+                                            }
+                                            Log.i(TAG,book.toString());
+                                        }
+                                        setUI(fbBooks);
+                                        Toast.makeText(BookListActivity.this, "Llista de llibres obtinguda de Firebase",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    setUI(BookContent.getBooks());
+                                }
+                            });
+                        } else {
+                            //bookItemList = BookContent.getBooks();
+                            setUI(BookContent.getBooks());
+                            Toast.makeText(BookListActivity.this, "Llista de llibres obtinguda de SugarORM db",
+                                    Toast.LENGTH_SHORT).show();
+                        }
 
                     }
                 });
-    }
 
-    private void setUI() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_book_list);
+        //setUI();
+       /* mRecyclerView = (RecyclerView) findViewById(R.id.recycler_book_list);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         // Canviem l'origen de dades de BookContent.ITEMS a BookContent.getBooks().
@@ -122,31 +132,33 @@ public class BookListActivity extends AppCompatActivity {
                     .beginTransaction()
                     .add(R.id.frag_book_detail, bookDetailFrag)
                     .commit();
-        }
+        }*/
     }
 
-    private void addFirebaseReferenceListener() {
-        mBookReference.addValueEventListener(new ValueEventListener() {
 
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                GenericTypeIndicator<ArrayList<BookContent.BookItem>> t =
-                        new GenericTypeIndicator<ArrayList<BookContent.BookItem>>() {};
-                ArrayList<BookContent.BookItem> fbBooks = dataSnapshot.getValue(t);
-                if (fbBooks != null) {
-                    for (BookContent.BookItem book : fbBooks) {
-                        if (!BookContent.exists(book)) {
-                            book.save(); //TODO: Si hi ha algun canvi en algun llibre no s'esta guardant.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                        }
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                bookItemList = BookContent.getBooks();
-            }
-        });
+
+
+    private void setUI(List<BookContent.BookItem> books) {
+
+        mAdapter.setItems(books);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_book_list);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+
+        //TODO: Provar si aixo es pot treure...
+        //Es comprova si tenim el fragment present en pantalla.
+        if (twoFragments) {
+            BookDetailFragment bookDetailFrag = new BookDetailFragment();
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.frag_book_detail, bookDetailFrag)
+                    .commit();
+        }
     }
 }

@@ -31,7 +31,7 @@ public class BookContent {
     /*
      * Clase estatica correspondiente a un elemento Book.
      */
-    public class BookItem extends SugarRecord {
+    public static class BookItem extends SugarRecord {
         private String title;
         private String author;
         private String publication_date;
@@ -39,12 +39,10 @@ public class BookContent {
         private String url_image;
 
 
-        //Constructor buit
-        public BookItem (){
+        public BookItem() {
         }
 
-
-        public BookItem(int identificador, String title, String author, String publication_date,
+        public BookItem(String title, String author, String publication_date,
                         String description, String url_image) {
             this.title = title;
             this.author = author;
@@ -95,6 +93,16 @@ public class BookContent {
             return url_image;
         }
 
+        @Override
+        public String toString() {
+            return "Llista de Books: \n" +
+                    "Book " + this.getId() + "-------------\n" +
+                    "Titol: " + this.getTitle() + "\n" +
+                    "Autor: " + this.getAuthor() + "\n" +
+                    "Data de publicació: " + this.getPublication_date() + "\n" +
+                    "Descripció: " + this.getDescription() + "\n" +
+                    "Url imatge: " + this.getUrl_image() + "\n";
+        }
     }
 
 }
