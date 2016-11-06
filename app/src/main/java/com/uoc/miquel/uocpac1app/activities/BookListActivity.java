@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +27,7 @@ import com.uoc.miquel.uocpac1app.adapters.RecyclerAdapter;
 import com.uoc.miquel.uocpac1app.fragments.BookDetailFragment;
 import com.uoc.miquel.uocpac1app.model.BookContent;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,17 +37,21 @@ import java.util.List;
  */
 public class BookListActivity extends AppCompatActivity {
 
-    public static final String TAG = "-----PAC2------";
+    public static final String TAG = "-----PAC2-----";
     private boolean twoFragments = false;
     private boolean isConnected = false;
+    private boolean isAuthenticated = false;
     private RecyclerView mRecyclerView;
     private RecyclerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private SwipeRefreshLayout swipeContainer;
 
     //Inicialitzem les variables corresponents a Firebase.
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mBookReference;
+
+    ValueEventListener valueEventListener;
 
 
     @Override
@@ -62,6 +68,36 @@ public class BookListActivity extends AppCompatActivity {
         ////////////////////////////////////////////////////////////////////// ----¿Necessari?
 
         twoFragments = findViewById(R.id.frag_book_detail) != null;
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id. swipeContainer);
+
+
+        //Es crea el listener ValueEventListener que s'afegirà a la DatabaseReference.
+        valueEventListener = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                GenericTypeIndicator<ArrayList<BookContent.BookItem>> t =
+                        new GenericTypeIndicator<ArrayList<BookContent.BookItem>>() {};
+                ArrayList<BookContent.BookItem> fbBooks = dataSnapshot.getValue(t);
+                if (fbBooks != null) {
+                    for (BookContent.BookItem book : fbBooks) {
+                        if (!BookContent.exists(book)) {
+                            book.save(); //TODO: Si hi ha algun canvi en algun llibre no s'esta guardant.
+                        }
+                        Log.i(TAG,book.toString());
+                    }
+                    setUI(fbBooks);
+                    Toast.makeText(BookListActivity.this, "Llista de llibres obtinguda de Firebase",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                setUI(BookContent.getBooks());
+            }
+        };
 
 
         mAdapter = new RecyclerAdapter(this, BookContent.getBooks(), twoFragments);
@@ -81,31 +117,7 @@ public class BookListActivity extends AppCompatActivity {
                         if (task.isSuccessful() && isConnected){
                             Log.i(TAG,"CONECTAT I AUTENTICAT");
 
-                            mBookReference.addValueEventListener(new ValueEventListener() {
-
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                    GenericTypeIndicator<ArrayList<BookContent.BookItem>> t =
-                                            new GenericTypeIndicator<ArrayList<BookContent.BookItem>>() {};
-                                    ArrayList<BookContent.BookItem> fbBooks = dataSnapshot.getValue(t);
-                                    if (fbBooks != null) {
-                                        for (BookContent.BookItem book : fbBooks) {
-                                            if (!BookContent.exists(book)) {
-                                                book.save(); //TODO: Si hi ha algun canvi en algun llibre no s'esta guardant.
-                                            }
-                                            Log.i(TAG,book.toString());
-                                        }
-                                        setUI(fbBooks);
-                                        Toast.makeText(BookListActivity.this, "Llista de llibres obtinguda de Firebase",
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    setUI(BookContent.getBooks());
-                                }
-                            });
+                            mBookReference.addValueEventListener(valueEventListener);
                         } else {
                             //bookItemList = BookContent.getBooks();
                             setUI(BookContent.getBooks());
@@ -116,23 +128,13 @@ public class BookListActivity extends AppCompatActivity {
                     }
                 });
 
-        //setUI();
-       /* mRecyclerView = (RecyclerView) findViewById(R.id.recycler_book_list);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        // Canviem l'origen de dades de BookContent.ITEMS a BookContent.getBooks().
-        mRecyclerView.setAdapter(mAdapter);
+        swipeContainer .setOnRefreshListener( new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
 
-        //TODO: Provar si aixo es pot treure...
-        //Es comprova si tenim el fragment present en pantalla.
-        if (twoFragments) {
-            BookDetailFragment bookDetailFrag = new BookDetailFragment();
 
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.frag_book_detail, bookDetailFrag)
-                    .commit();
-        }*/
+            }
+        });
     }
 
 
