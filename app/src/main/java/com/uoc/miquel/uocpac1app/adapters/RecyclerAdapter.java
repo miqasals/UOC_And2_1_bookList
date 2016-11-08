@@ -35,9 +35,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
 
-    public RecyclerAdapter(Context context, List<BookContent.BookItem> obj, boolean num) {
+    public RecyclerAdapter(Context context, boolean num) {
         this.mContext = context;
-        this.items = new ArrayList<>(obj);
+        this.items = new ArrayList<>();
         this.twoFragments = num;
     }
 
