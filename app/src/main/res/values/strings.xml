@@ -1,11 +1,5 @@
 <resources>
-    <string name="app_name">UOCpac1app</string>
+    <string name="app_name">UOCpac2app</string>
     <string name="title_activity_book_list">BookListActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="book_detail_name_text">Details about Item: </string>
-    <string name="book_item_name_sample">"Item "</string>
-    <string name="book_detail_activity_title">Item X</string>
-    <string name="book_detail_id_text">X</string>
-    <string name="book_detail_desc_text">Book text description bla bla bla bla...</string>
 </resources>

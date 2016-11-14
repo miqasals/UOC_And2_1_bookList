@@ -34,7 +34,8 @@ public class BookDetailFragment extends Fragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            //TODO: BookDetailFragment.java - Obtenir el book concret.
+            //Se cambia el origen de los datos de la lista estatica a la funcion getBooks() que lo
+            //obtiene de la base de dades local.
             book = BookContent.getBooks().get(args.getInt("position"));
         }
     }

@@ -37,11 +37,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public RecyclerAdapter(Context context, boolean num) {
         this.mContext = context;
+        //Unicament inicialitzem la llista per tal que no doni cap error. La llista s'emplena amb setItems().
         this.items = new ArrayList<>();
         this.twoFragments = num;
     }
 
 
+    /*
+     * Actualitza la llista de l'adaptador de la recyclerView.
+     */
     public void setItems(List<BookContent.BookItem> items) {
             this.items = new ArrayList<>(items);
     }
@@ -73,6 +77,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     /*
      * Se encarga de mostrar los diferentes elementos cuando la RecyclerView lo necesite, modificando
      * el conjunto de elementos en funcion de la posicion.
+     *
+     * Esta funcion no cambia desde la PAC1 ya que sigui cogiendo los datos de la lista items. Esta
+     * lista se modifica con la funciona setItems().
      */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {

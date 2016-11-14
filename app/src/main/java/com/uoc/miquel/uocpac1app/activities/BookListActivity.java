@@ -38,11 +38,9 @@ import java.util.List;
 public class BookListActivity extends AppCompatActivity {
 
     public static final String TAG = "-----PAC2-----";
-    public static final String FIREBASE = "FIREBASE";
-    public static final String SUGAR = "SUGAR";
-    private boolean twoFragments = false;
-    private boolean isAuth = false;
-    private boolean isNewData = false;
+    private boolean twoFragments = false;   //Indica si hi ha el fragment de detalls.
+    private boolean isAuth = false;         //Indica si l'autenticació a Firebase ha estat correcta.
+    private boolean isNewData = false;      //Indica si s'ha rebut noves dades de Firebase.
 
     //Variables RecyclerView
     private RecyclerView mRecyclerView;
@@ -63,20 +61,24 @@ public class BookListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list);
 
+        //Obtenim un informador de l'estat de connexió del dispositiu.
         //https://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html#DetermineType
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
+        //Es comprova si hi ha el segon panell de detalls.
         twoFragments = findViewById(R.id.frag_book_detail) != null;
+        //Obtenim la referència al swipe layout.
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id. swipeContainer);
+        //Inicialitzem l'adaptador.
         mAdapter = new RecyclerAdapter(this, twoFragments);
 
 
         //Inicialitzem les variables d'autenticacio i base de dades Firebase.
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
-        mBookReference = mDatabase.getReference("books");
+        mBookReference = mDatabase.getReference("books");   //Passem com a referència el nivell de dades que volem que ens passi amb l'snapshot
         mBookReference.addValueEventListener(getValueEventListener());
 
 
@@ -95,8 +97,9 @@ public class BookListActivity extends AppCompatActivity {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-    //Genera la vista de l'activity a partir dels llibres guardats localment.
+    /*
+     * setUI() s'encarrega de actualitzar les dades de l'adaptador i d'inflar la llista de tarjetes.
+     */
     private void setUI() {
 
         mAdapter.setItems(BookContent.getBooks());
@@ -106,7 +109,6 @@ public class BookListActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        //TODO: Provar si aixo es pot treure...
         //Es comprova si tenim el fragment present en pantalla.
         if (twoFragments) {
             BookDetailFragment bookDetailFrag = new BookDetailFragment();
@@ -119,6 +121,9 @@ public class BookListActivity extends AppCompatActivity {
     }
 
 
+    /*
+     * Indica si el dispositiu disposa d'algun tipus de connexió a la xarxa.
+     */
     private boolean isConnected(NetworkInfo activeNetwork) {
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
@@ -127,16 +132,22 @@ public class BookListActivity extends AppCompatActivity {
 
 
 
-    //Retorna un listener ValueEventListener
+    /*
+     * Retorna un objecte ValueEventListener. Aquest listener s'encarrega d'escoltar la base de dades
+     * Firebase i en el moment que es detecta un canvi s'executa el mètode onDataChange(). Aquest mètode
+     * transmet per parametre un objecte DataSnapshot que conté una "vista" de la base de dades en el moment
+     * dels canvis. Dins d'aquest mètode guardem les noves dades a la variable global newData i activem
+     * el flag isNewData per tal que quan fem un refresh de la llista s'actualitzi amb noves dades.
+     * En cas que no s'hagin pogut descarregar les dades ja sigui per problemes de connexió d'autenticació
+     * a la base de dades es crida onCancelled, que únicament ens indicara que no ha pogut accedir a Firebase.
+     */
     @NonNull
     private ValueEventListener getValueEventListener() {
         return new ValueEventListener() {
 
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                //updateBooks(dataSnapshot);
                 newData = dataSnapshot;
                 isNewData = true;
 
@@ -149,19 +160,30 @@ public class BookListActivity extends AppCompatActivity {
         };
     }
 
+
+    /*
+     * Rep per paramtre un snapshot de Firebase. En cas que hi hagi nous elements a la base de dades
+     * Firebase els copiarà a la base de dades local i indicarà que s'ha actualitzat la llista.
+     */
     private void updateBooks(DataSnapshot dataSnapshot) {
         boolean newData = false;
+        //Es rep l'objecte DataSnapshot i es transforma en un ArrayList de llibres.
         GenericTypeIndicator<ArrayList<BookContent.BookItem>> t =
                 new GenericTypeIndicator<ArrayList<BookContent.BookItem>>() {};
         ArrayList<BookContent.BookItem> fbBooks = dataSnapshot.getValue(t);
+        //Comprovem que la llista de llibres rebuda de Firebase no sigui buida.
         if (fbBooks != null) {
             for (BookContent.BookItem book : fbBooks) {
+                //Per cada element de la llista comprovem si existeix ja en la base de dades local.
                 if (!BookContent.exists(book)) {
-                    book.save(); //TODO: Si hi ha algun canvi en algun llibre no s'esta guardant.
+                    //Si no existeix s'afegeix i s'indica que hi ha hagut canvis a la llista
+                    book.save(); //ATENCIÓ: Només es detecta els canvis en els llibres si es canvia titol i/o autor.
                     newData = true;
                 }
             }
+            //S'actualitza la llista mostrada a l'usuari
             setUI();
+            //Si hi ha hagut canvis s'indica a l'usuari.
             if (newData) {
                 Toast.makeText(BookListActivity.this, "S'ha trobat i afegit nous llibres.",
                         Toast.LENGTH_SHORT).show();
@@ -169,6 +191,11 @@ public class BookListActivity extends AppCompatActivity {
         }
     }
 
+
+    /*
+     * Autentiquem l'usuari a la base de dades Firebase. Si s'autentica correctament s'indica
+     * en el boolea isAuth.
+     */
     private void signInFirebaseDatabase() {
 
         mAuth.signInWithEmailAndPassword("miqasals@gmail.com", "123456")
@@ -184,6 +211,7 @@ public class BookListActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(BookListActivity.this, "No s'ha pogut autenticar a Firebase",
                                     Toast.LENGTH_SHORT).show();
+                            isAuth = false;
                         }
 
                     }
@@ -191,8 +219,14 @@ public class BookListActivity extends AppCompatActivity {
     }
 
 
-
-
+    /*
+     * Retorna un listener per al Swipe layout. Aquest listener controla quan l'usuari estira la llista cap baix
+     * per tal que cridi a la funció onRefresh.
+     * El mètode onRefresh comprova si hi ha noves dades rebudes de Firebase amb el flag isNewData. Si hi han
+     * noves dades es comprova que es disposi de connexió i l'usuari estigui autenticat per poder accedir a Firebase.
+     * Si tot es correcte es crida la funció updateBooks amb el DataSnapshot global newData, on s'haura guardat la vista
+     * en el mateix moment que s'ha activat el flag isNewData, i s'actualitza la llista.
+     */
     @NonNull
     private SwipeRefreshLayout.OnRefreshListener getSwipeContainerListener(final NetworkInfo activeNetwork) {
         return new SwipeRefreshLayout.OnRefreshListener() {
@@ -202,12 +236,11 @@ public class BookListActivity extends AppCompatActivity {
                     if (isConnected(activeNetwork) && isAuth){
 
                         updateBooks(newData);
+                        //Després d'actualitzar la llista es para la barra de carrega
                         if (swipeContainer.isRefreshing()) {
                             swipeContainer.setRefreshing(false);
                         }
                         isNewData = false;
-
-                        setUI();
                     } else {
                         if (swipeContainer.isRefreshing()) {
                             swipeContainer.setRefreshing(false);
