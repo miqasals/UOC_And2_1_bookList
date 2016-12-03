@@ -3,6 +3,11 @@
     package="com.uoc.miquel.uocpac1app">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.uoc.miquel.uocpac1app.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="com.uoc.miquel.uocpac1app.permission.C2D_MESSAGE"
+                     android:protectionLevel="signature"/>
 
     <application
         android:allowBackup="true"
@@ -12,6 +17,8 @@
         android:theme="@style/AppTheme"
         android:name="com.orm.SugarApp">
 
+
+
         <!-- Meta data SugarORM -->
         <meta-data android:name="DATABASE" android:value="book_database.db" />
         <meta-data android:name="VERSION" android:value="1" />
@@ -20,7 +27,7 @@
 
         <activity
             android:name=".activities.BookListActivity"
-            android:label="PAC1">
+            android:label="PAC3">
             <intent-filter>
                 <action
                     android:name="android.intent.action.MAIN" />
@@ -32,6 +39,25 @@
         <activity
             android:name=".activities.BookDetailActivity"
             android:parentActivityName=".activities.BookListActivity" />
+
+        <service android:name=".services.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <!-- Notifications -
+        <receiver android:name="com.backendless.push.BackendlessBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permision.SEND">
+
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+                <category android:name="com.uoc.miquel.uocpac1app"/>
+            </intent-filter>
+
+        </receiver>
+        <!- fi Notifications -->
     </application>
 
 </manifest>

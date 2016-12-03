@@ -8,37 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:335647726121:android:8481dd4a87bbff97",
-        "android_client_info": {
-          "package_name": "com.uoc.miquel.AND2_PAC2"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "335647726121-1prsg8d26d0qjqlpdichdnfrcvrk8vln.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBfLOA6OBUoZjyrtI2S3WW5ta-4PnXup7M"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:335647726121:android:105ce64688fbd646",
         "android_client_info": {
           "package_name": "com.uoc.miquel.uocpac1app"
