@@ -1,10 +1,12 @@
 package com.uoc.miquel.uocpac1app.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,10 +28,10 @@ import com.uoc.miquel.uocpac1app.R;
 import com.uoc.miquel.uocpac1app.adapters.RecyclerAdapter;
 import com.uoc.miquel.uocpac1app.fragments.BookDetailFragment;
 import com.uoc.miquel.uocpac1app.model.BookContent;
+import com.uoc.miquel.uocpac1app.services.MyFirebaseMessagingService;
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 /*
@@ -60,6 +62,20 @@ public class BookListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list);
+
+
+        Intent receviedIntent = getIntent();
+        int receivedPosition = receviedIntent.getIntExtra(MyFirebaseMessagingService.POSITION_KEY,-1);
+        if (receviedIntent.getAction().equals(MyFirebaseMessagingService.ACTION_DETAIL)
+                && receivedPosition > -1) {
+            viewBook(receivedPosition);
+        } else if ( receviedIntent.getAction().equals(MyFirebaseMessagingService.ACTION_ERASE)
+                && receivedPosition > -1) {
+            removeBook(receivedPosition);
+        }
+
+
+
 
         //Obtenim un informador de l'estat de connexió del dispositiu.
         //https://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html#DetermineType
@@ -165,7 +181,7 @@ public class BookListActivity extends AppCompatActivity {
      * Rep per paramtre un snapshot de Firebase. En cas que hi hagi nous elements a la base de dades
      * Firebase els copiarà a la base de dades local i indicarà que s'ha actualitzat la llista.
      */
-    private void updateBooks(DataSnapshot dataSnapshot) {
+    private void updateBooksFromFirebase(DataSnapshot dataSnapshot) {
         boolean newData = false;
         //Es rep l'objecte DataSnapshot i es transforma en un ArrayList de llibres.
         GenericTypeIndicator<ArrayList<BookContent.BookItem>> t =
@@ -224,7 +240,7 @@ public class BookListActivity extends AppCompatActivity {
      * per tal que cridi a la funció onRefresh.
      * El mètode onRefresh comprova si hi ha noves dades rebudes de Firebase amb el flag isNewData. Si hi han
      * noves dades es comprova que es disposi de connexió i l'usuari estigui autenticat per poder accedir a Firebase.
-     * Si tot es correcte es crida la funció updateBooks amb el DataSnapshot global newData, on s'haura guardat la vista
+     * Si tot es correcte es crida la funció updateBooksFromFirebase amb el DataSnapshot global newData, on s'haura guardat la vista
      * en el mateix moment que s'ha activat el flag isNewData, i s'actualitza la llista.
      */
     @NonNull
@@ -235,7 +251,7 @@ public class BookListActivity extends AppCompatActivity {
                 if (isNewData){
                     if (isConnected(activeNetwork) && isAuth){
 
-                        updateBooks(newData);
+                        updateBooksFromFirebase(newData);
                         //Després d'actualitzar la llista es para la barra de carrega
                         if (swipeContainer.isRefreshing()) {
                             swipeContainer.setRefreshing(false);
@@ -251,10 +267,36 @@ public class BookListActivity extends AppCompatActivity {
                     if (swipeContainer.isRefreshing()) {
                         swipeContainer.setRefreshing(false);
                     }
-                    Toast.makeText(BookListActivity.this, "La llista de llibres ja esta actualitzada", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BookListActivity.this, "No s'han trobat nous llibres", Toast.LENGTH_SHORT).show();
                 }
 
             }
         };
+    }
+
+
+    public void viewBook(int position) {
+        if ( twoFragments ) {
+            BookDetailFragment bookDetailFragment = new BookDetailFragment();
+            Bundle posArg = new Bundle();
+            posArg.putInt("position",position);
+            bookDetailFragment.setArguments(posArg);
+
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction()
+                    .replace(R.id.frag_book_detail,bookDetailFragment)
+                    .commit();
+
+        } else {
+            Intent intent = new Intent(this, BookDetailActivity.class);
+            intent.putExtra("position", position);
+            this.startActivity(intent);
+        }
+    }
+
+    public void removeBook (int position) {
+        BookContent.BookItem book = BookContent.BookItem.findById(BookContent.BookItem.class,position);
+        book.delete();
+        setUI();
     }
 }

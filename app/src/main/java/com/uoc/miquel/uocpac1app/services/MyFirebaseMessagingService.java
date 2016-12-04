@@ -17,6 +17,8 @@ import com.uoc.miquel.uocpac1app.activities.BookDetailActivity;
 import com.uoc.miquel.uocpac1app.activities.BookListActivity;
 import com.uoc.miquel.uocpac1app.model.BookContent;
 
+import java.util.Map;
+
 /**
  * Created by mucl on 29/11/2016.
  */
@@ -25,34 +27,64 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public static final String ACTION_DETAIL = "detail";
     public static final String ACTION_ERASE = "erase";
+    public static final String POSITION_KEY = "position";
 
 
 
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        //Creem una notificació local a partir de les dades rebudes de la notificació Firebase.
-        Log.i("MYFIREBASE","onMessageReceived");
-        sendNotification(remoteMessage.getNotification().getBody(),0);
+
+        String nTitle;
+        String nMessage;
+        String mId;
+        int nBookPosition;
+
+        ///////////// DATA RECEPTION /////////////////
+        RemoteMessage.Notification notification = remoteMessage.getNotification();
+        Map<String,String> data = remoteMessage.getData();
+
+        ///////////// DATA PROCESSING /////////////////
+        if (notification.getTitle() != null) {
+            nTitle = notification.getTitle();
+        } else {
+            nTitle = "BookApp Firebase Notification";
+        }
+        if (notification.getBody() != null) {
+            nMessage = notification.getBody();
+        } else {
+            nMessage = "";
+        }
+        if (!data.isEmpty()) {
+            nBookPosition = Integer.parseInt(data.get(POSITION_KEY));
+        } else {
+            nBookPosition = -1;
+        }
+        /////////////// SENDING THE NOTIFICATION ////////////
+        sendNotification(0,nTitle,nMessage,nBookPosition);
     }
 
-    private void sendNotification(String messageBody, int position) {
+    private void sendNotification(int id, String title, String messageBody, int position) {
 
-        //BookContent.BookItem bookItem;
+        BookContent.BookItem bookItem;
+
 
         //obtenim el book a partir de la posicio
-        //bookItem = BookContent.getBooks().get(position);
+        bookItem = BookContent.getBooks().get(position);
+        if (messageBody.length() > 0) messageBody.concat("\n");
+        String message = messageBody.concat(bookItem.getTitle());
 
 
         ///////////////// INTENTS  /////////////////////
         // Creem un intent per quan vulguem veure el detall del llibre
-        Intent detailIntent = new Intent(this, BookDetailActivity.class);
+        Intent detailIntent = new Intent(this, BookListActivity.class);
         detailIntent.setAction(ACTION_DETAIL);
+        detailIntent.putExtra(POSITION_KEY, position);
         PendingIntent piDetail = PendingIntent.getActivity(this,(int) System.currentTimeMillis(),detailIntent,0);
 
 
         //Creem un intent per quan vulguem borrar el llibre de la based dades local.
-        Intent eraseIntent = new Intent(this, BookDetailActivity.class);
+        Intent eraseIntent = new Intent(this, BookListActivity.class);
         eraseIntent.setAction(ACTION_ERASE);
         PendingIntent piErase = PendingIntent.getActivity(this,(int) System.currentTimeMillis(),eraseIntent,0);
         ///////////////////////////////////////////////
@@ -60,53 +92,31 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //Es crea un so per la notificacio
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
+        /////////////////  NOTIFICATION BUILDER //////////
         //Es crea el builder de la notificació.
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 //Configurem la icona de la barra d'estat
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_new_releases_black_24dp)
                 //Titol de la notificacio visible quan esta extesa.
-                .setContentTitle("Firebase")
+                .setContentTitle(title)
                 //Text de la notificacio visible quan esta extesa.
-                .setContentText("Text normal de la notificació")
+                //.setContentText(messageBody)
                 //Indiquem a la notificació que es pot tancar despres de presionar-la
                 .setAutoCancel(true)
                 //Asigna el so que hem creat anteriorment.
                 .setSound(defaultSoundUri)
 
                 .setStyle(new NotificationCompat.BigTextStyle()
-                    .bigText("Text extra de la notificació expandida."))
-                .addAction(new NotificationCompat.Action(R.mipmap.ic_launcher,"Eliminar",piErase))
-                .addAction(new NotificationCompat.Action(R.mipmap.ic_launcher,"Veure",piDetail));
+                    .bigText(messageBody))
+                .addAction(new NotificationCompat.Action(R.drawable.ic_delete_black_24dp,"Eliminar",piErase))
+                .addAction(new NotificationCompat.Action(R.drawable.ic_search_black_24dp,"Veure",piDetail));
+        ////////////////////////////////////////////////////
 
         //Es crea una instancia del gestor de notificacions.
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         //S'executa la notificació.
-        notificationManager.notify(0, notificationBuilder.build());
-    }
-
-
-
-    private void sendNotification2 (String msg, int i) {
-
-        Intent intent = new Intent(this, BookListActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentText(msg)
-                .setContentTitle("Titol de la notificacio")
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
-
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        nm.notify(0, notificationBuilder.build());
-
+        notificationManager.notify(id, notificationBuilder.build());
     }
 
 
