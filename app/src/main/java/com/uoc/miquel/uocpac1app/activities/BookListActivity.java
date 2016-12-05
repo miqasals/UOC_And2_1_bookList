@@ -39,7 +39,7 @@ import java.util.ArrayList;
  */
 public class BookListActivity extends AppCompatActivity {
 
-    public static final String TAG = "-----PAC2-----";
+    public static final String TAG = "-----PAC3-----";
     private boolean twoFragments = false;   //Indica si hi ha el fragment de detalls.
     private boolean isAuth = false;         //Indica si l'autenticació a Firebase ha estat correcta.
     private boolean isNewData = false;      //Indica si s'ha rebut noves dades de Firebase.

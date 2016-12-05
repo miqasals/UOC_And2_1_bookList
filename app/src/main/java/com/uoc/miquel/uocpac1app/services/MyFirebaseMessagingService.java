@@ -2,6 +2,7 @@ package com.uoc.miquel.uocpac1app.services;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
@@ -27,6 +28,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public static final String ACTION_DETAIL = "detail";
     public static final String ACTION_ERASE = "erase";
+    public static final String ACTION_MAIN = "main";
     public static final String POSITION_KEY = "position";
 
 
@@ -39,40 +41,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String nMessage;
         String mId;
         int nBookPosition;
+        BookContent.BookItem bookItem;
 
         ///////////// DATA RECEPTION /////////////////
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         Map<String,String> data = remoteMessage.getData();
 
         ///////////// DATA PROCESSING /////////////////
-        if (notification.getTitle() != null) {
-            nTitle = notification.getTitle();
+        if (!data.isEmpty()) {
+            nBookPosition = Integer.parseInt(data.get(POSITION_KEY));
         } else {
-            nTitle = "BookApp Firebase Notification";
+            nBookPosition = -1;
         }
         if (notification.getBody() != null) {
             nMessage = notification.getBody();
         } else {
             nMessage = "";
         }
-        if (!data.isEmpty()) {
-            nBookPosition = Integer.parseInt(data.get(POSITION_KEY));
-        } else {
-            nBookPosition = -1;
-        }
         /////////////// SENDING THE NOTIFICATION ////////////
-        sendNotification(0,nTitle,nMessage,nBookPosition);
+        sendNotification(0,nMessage,nBookPosition);
+
+        Log.i(BookListActivity.TAG,"Missatge:\n " + nMessage + "\n Position: " + nBookPosition);
+
     }
 
-    private void sendNotification(int id, String title, String messageBody, int position) {
-
-        BookContent.BookItem bookItem;
 
 
-        //obtenim el book a partir de la posicio
-        bookItem = BookContent.getBooks().get(position);
-        if (messageBody.length() > 0) messageBody.concat("\n");
-        String message = messageBody.concat(bookItem.getTitle());
+    private void sendNotification(int id, String messageBody, int position) {
 
 
         ///////////////// INTENTS  /////////////////////
@@ -86,7 +81,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //Creem un intent per quan vulguem borrar el llibre de la based dades local.
         Intent eraseIntent = new Intent(this, BookListActivity.class);
         eraseIntent.setAction(ACTION_ERASE);
-        PendingIntent piErase = PendingIntent.getActivity(this,(int) System.currentTimeMillis(),eraseIntent,0);
+        detailIntent.putExtra(POSITION_KEY, position);
+        PendingIntent piErase = PendingIntent.getActivity(this,(int) System.currentTimeMillis(), eraseIntent, 0);
+
+        //Creem un intent que ens conduirà a l'aplicació en cas que es premi al missatge de l'aplicació.
+        //TODO: Mirar de crear una finestra d'actuació dins de l'aplicació per quan s'activi aquesta opció.
+        Intent mainIntent = new Intent(this, BookListActivity.class);
+        mainIntent.setAction(ACTION_MAIN);
+        PendingIntent piMain = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), mainIntent, 0);
         ///////////////////////////////////////////////
 
         //Es crea un so per la notificacio
@@ -98,9 +100,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //Configurem la icona de la barra d'estat
                 .setSmallIcon(R.drawable.ic_new_releases_black_24dp)
                 //Titol de la notificacio visible quan esta extesa.
-                .setContentTitle(title)
+                .setContentTitle("Notificació Firebase")
                 //Text de la notificacio visible quan esta extesa.
-                //.setContentText(messageBody)
+                .setContentText(BookContent.getBooks().get(position).getTitle())
                 //Indiquem a la notificació que es pot tancar despres de presionar-la
                 .setAutoCancel(true)
                 //Asigna el so que hem creat anteriorment.
@@ -109,8 +111,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setStyle(new NotificationCompat.BigTextStyle()
                     .bigText(messageBody))
                 .addAction(new NotificationCompat.Action(R.drawable.ic_delete_black_24dp,"Eliminar",piErase))
-                .addAction(new NotificationCompat.Action(R.drawable.ic_search_black_24dp,"Veure",piDetail));
+                .addAction(new NotificationCompat.Action(R.drawable.ic_search_black_24dp,"Veure",piDetail))
+                .setContentIntent(piMain)
+                ;
         ////////////////////////////////////////////////////
+
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(BookListActivity.class);
+
 
         //Es crea una instancia del gestor de notificacions.
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
