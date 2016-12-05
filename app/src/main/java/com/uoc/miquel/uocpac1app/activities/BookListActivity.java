@@ -1,5 +1,6 @@
 package com.uoc.miquel.uocpac1app.activities;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -28,7 +29,7 @@ import com.uoc.miquel.uocpac1app.R;
 import com.uoc.miquel.uocpac1app.adapters.RecyclerAdapter;
 import com.uoc.miquel.uocpac1app.fragments.BookDetailFragment;
 import com.uoc.miquel.uocpac1app.model.BookContent;
-import com.uoc.miquel.uocpac1app.services.MyFirebaseMessagingService;
+import com.uoc.miquel.uocpac1app.model.CommonConstants;
 
 
 import java.util.ArrayList;
@@ -39,7 +40,6 @@ import java.util.ArrayList;
  */
 public class BookListActivity extends AppCompatActivity {
 
-    public static final String TAG = "-----PAC3-----";
     private boolean twoFragments = false;   //Indica si hi ha el fragment de detalls.
     private boolean isAuth = false;         //Indica si l'autenticació a Firebase ha estat correcta.
     private boolean isNewData = false;      //Indica si s'ha rebut noves dades de Firebase.
@@ -56,24 +56,37 @@ public class BookListActivity extends AppCompatActivity {
     private DatabaseReference mBookReference;
     private DataSnapshot newData;
 
+    private NetworkInfo activeNetwork;
+
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list);
-
-
-        Intent receviedIntent = getIntent();
-        int receivedPosition = receviedIntent.getIntExtra(MyFirebaseMessagingService.POSITION_KEY,-1);
-        if (receviedIntent.getAction().equals(MyFirebaseMessagingService.ACTION_DETAIL)
-                && receivedPosition > -1) {
-            viewBook(receivedPosition);
-        } else if ( receviedIntent.getAction().equals(MyFirebaseMessagingService.ACTION_ERASE)
-                && receivedPosition > -1) {
-            removeBook(receivedPosition);
+        
+        /*
+        if (getIntent() != null && getIntent().getAction() != null) {
+            if (getIntent().getAction().equals(CommonConstants.ACTION_DETAIL)
+                    && getIntent().hasExtra(CommonConstants.POSITION_KEY)) {
+                int receivedPosition = getIntent().getIntExtra(CommonConstants.POSITION_KEY, -1);
+                if (receivedPosition > -1 && receivedPosition < BookContent.getBooks().size()) {
+                    viewBook(receivedPosition);
+                    NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    nm.cancelAll();
+                }
+            } else if (getIntent().getAction().equals(CommonConstants.ACTION_ERASE)
+                    && getIntent().hasExtra(CommonConstants.POSITION_KEY)) {
+                int receivedPosition = getIntent().getIntExtra(CommonConstants.POSITION_KEY, -1);
+                if (receivedPosition > -1 && receivedPosition < BookContent.getBooks().size()) {
+                    removeBook(receivedPosition);
+                    NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    nm.cancelAll();
+                }
+            }
         }
-
+        */
 
 
 
@@ -81,7 +94,7 @@ public class BookListActivity extends AppCompatActivity {
         //https://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html#DetermineType
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        activeNetwork = cm.getActiveNetworkInfo();
 
         //Es comprova si hi ha el segon panell de detalls.
         twoFragments = findViewById(R.id.frag_book_detail) != null;
@@ -109,6 +122,33 @@ public class BookListActivity extends AppCompatActivity {
         setUI();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        //super.onNewIntent(intent);
+
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        if (intent != null && intent.getAction() != null) {
+            if (intent.getAction().equals(CommonConstants.ACTION_DETAIL)
+                    && intent.hasExtra(CommonConstants.POSITION_KEY)) {
+                int receivedPosition = intent.getIntExtra(CommonConstants.POSITION_KEY, -1);
+                if (receivedPosition > -1 && receivedPosition < BookContent.getBooks().size()) {
+                    Toast.makeText(this, "ACTION_DETAIL", Toast.LENGTH_SHORT).show();
+                    viewBook(receivedPosition);
+                    nm.cancelAll();
+                }
+            } else if (intent.getAction().equals(CommonConstants.ACTION_ERASE)
+                    && intent.hasExtra(CommonConstants.POSITION_KEY)) {
+                int receivedPosition = intent.getIntExtra(CommonConstants.POSITION_KEY, -1);
+                if (receivedPosition > -1 && receivedPosition < BookContent.getBooks().size()) {
+                    Toast.makeText(this, "ACTION_ERASE", Toast.LENGTH_SHORT).show();
+                    removeBook(receivedPosition);
+                    nm.cancelAll();
+                }
+            }
+        }
+        
+    }
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,7 +258,7 @@ public class BookListActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                        Log.d(CommonConstants.TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
 
                         if (task.isSuccessful()){
                             isAuth = true;
@@ -295,7 +335,7 @@ public class BookListActivity extends AppCompatActivity {
     }
 
     public void removeBook (int position) {
-        BookContent.BookItem book = BookContent.BookItem.findById(BookContent.BookItem.class,position);
+        BookContent.BookItem book = BookContent.getBooks().get(position);
         book.delete();
         setUI();
     }

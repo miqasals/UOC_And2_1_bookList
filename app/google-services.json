@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "335647726121-ln1l75n5e34vskqj960fcogd6ft3ntfk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.uoc.miquel.uocpac1app",
+            "certificate_hash": "C5F3A6E64F9EFB7C1BE35E74379EDBF9FA0DB657"
+          }
+        },
+        {
           "client_id": "335647726121-1prsg8d26d0qjqlpdichdnfrcvrk8vln.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "335647726121-1prsg8d26d0qjqlpdichdnfrcvrk8vln.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

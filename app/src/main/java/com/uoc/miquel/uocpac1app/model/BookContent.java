@@ -22,6 +22,8 @@ public class BookContent {
                 String.valueOf(bookItem.getTitle()),bookItem.getAuthor()).size())>0);
     }
 
+
+
     //Es retorna la llista completa de llibres guardats a la base de dades local.
     public static List<BookItem> getBooks(){
         return BookItem.listAll(BookItem.class);

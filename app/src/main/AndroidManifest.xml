@@ -36,9 +36,14 @@
                     android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+
         <activity
             android:name=".activities.BookDetailActivity"
             android:parentActivityName=".activities.BookListActivity" />
+
+
 
         <service android:name=".services.MyFirebaseMessagingService">
             <intent-filter>
