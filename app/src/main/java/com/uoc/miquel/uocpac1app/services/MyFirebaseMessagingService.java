@@ -63,7 +63,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Intent eraseIntent = new Intent(this, BookListActivity.class);
         eraseIntent.setAction(CommonConstants.ACTION_ERASE);
         eraseIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        detailIntent.putExtra(CommonConstants.POSITION_KEY, position);
+        eraseIntent.putExtra(CommonConstants.POSITION_KEY, position);
         PendingIntent piErase = PendingIntent.getActivity(this,(int) System.currentTimeMillis(), eraseIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
 
         //Creem un intent que ens conduirà a l'aplicació en cas que es premi al missatge de l'aplicació.
