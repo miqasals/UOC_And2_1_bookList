@@ -1,5 +1,6 @@
 package com.uoc.miquel.uocpac1app.services;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -18,6 +19,8 @@ import com.uoc.miquel.uocpac1app.model.BookContent;
 import com.uoc.miquel.uocpac1app.model.CommonConstants;
 
 import java.util.Map;
+
+import static android.support.v4.app.NotificationCompat.FLAG_SHOW_LIGHTS;
 
 /**
  * Created by mucl on 29/11/2016.
@@ -80,7 +83,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //Es crea el builder de la notificació.
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 //Configurem la icona de la barra d'estat
-                .setSmallIcon(R.drawable.ic_new_releases_black_24dp)
+                .setSmallIcon(R.drawable.ic_import_contacts_black_24dp)
                 //Titol de la notificacio visible quan esta extesa.
                 .setContentTitle("Notificació Firebase")
                 //Text de la notificacio visible quan esta extesa.
@@ -109,8 +112,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //Es crea una instancia del gestor de notificacions.
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+        Notification notif = notificationBuilder.build();
+        notif.flags |= FLAG_SHOW_LIGHTS;
+
         //S'executa la notificació.
-        notificationManager.notify(CommonConstants.NOTIFICATION_ID, notificationBuilder.build());
+        notificationManager.notify(CommonConstants.NOTIFICATION_ID, notif);
     }
 
 
